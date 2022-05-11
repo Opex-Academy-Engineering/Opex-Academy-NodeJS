@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 
 // Schema for user
@@ -9,11 +10,13 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        default:"",
         trim: true
     },
     email: {
         type: String,
         required: true,
+        default:"",
         unique: true,
         trim: true,
         lowercase: true,
@@ -26,6 +29,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+        default:"",
         validate(value) {
             if (value.toLowerCase().includes('password')) {
                 throw new Error('Password can\'t be your password.');
@@ -38,7 +42,7 @@ const userSchema = new mongoose.Schema({
         token: {
             required: true,
             type: String
-        }
+        } 
     }]
 }, {
     timestamps: true
@@ -47,10 +51,10 @@ const userSchema = new mongoose.Schema({
 // Web token generator method
 userSchema.methods.generateWebToken = async function() {
     const user = this;
-    const token = jwt.sign({ _id: user._id.toString() }, 'mySecretKey');
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.ACCESS_TOKEN_SECRET,{expiresIn:'7 days'});
 
     user.tokens = user.tokens.concat({ token });
-    await user.save()
+    await user.save();
 
     return token;
 }

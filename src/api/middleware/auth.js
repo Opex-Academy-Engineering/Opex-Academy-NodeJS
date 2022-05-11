@@ -1,10 +1,11 @@
-const User = require('../models/user.js');
+const User = require('../../models/user');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const auth = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
-        const payload = jwt.verify(token, 'mySecretKey');
+        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const user = await User.findOne({ _id: payload._id, 'tokens.token': token});
 
         if (!user) {

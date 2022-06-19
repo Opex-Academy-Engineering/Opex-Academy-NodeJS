@@ -1,24 +1,24 @@
-const User = require('../../models/user');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const User = require("../../models/user");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const auth = async (req, res, next) => {
-    try {
-        const token = req.header('Authorization').replace('Bearer ', '');
-        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        const user = await User.findOne({ _id: payload._id, 'tokens.token': token});
+  try {
+    const token = req.header("Authorization").replace("Bearer ", "");
+    const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-        if (!user) {
-            throw new Error('User not found');
-        }
+    const user = await User.findOne({ _id: payload._id });
 
-        req.user = user;
-        req.token = token;
-        next();
+    if (!user) {
+      throw new Error("User not found");
     }
-    catch (error) {
-        res.status(400).json({"message":"Invalid Token or expired","data":error})
-    }
-}
+
+    req.user = user;
+    req.token = token;
+    next();
+  } catch (error) {
+    res.status(400).json({ message: "Invalid Token or expired", data: error });
+  }
+};
 
 module.exports = auth;

@@ -7,6 +7,11 @@ require('dotenv').config();
 
 // Schema for user
 const userSchema = new mongoose.Schema({
+    profile_pic:{
+type:String,
+default:'',
+trim:true
+    },
     name: {
         type: String,
         required: true,
@@ -38,6 +43,17 @@ const userSchema = new mongoose.Schema({
         minlength: 7,
         trim: true
     },
+    phone_no:{
+        type:String,
+        required:true,
+        default:""
+    },
+    
+    role: {
+        type: mongoose.Schema.Types.String,
+        required: true,
+        default: 'student'
+      },
     tokens: [{
         token: {
             required: true,

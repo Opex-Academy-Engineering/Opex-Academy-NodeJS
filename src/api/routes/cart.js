@@ -1,139 +1,134 @@
-const express = require('express')
-const auth = require('../middleware/auth.js')
-const jwt = require('jsonwebtoken')
-const Cart = require('../../models/cart')
-const router = new express.Router()
+const express = require("express");
+const auth = require("../middleware/auth.js");
+const jwt = require("jsonwebtoken");
+const Cart = require("../../models/cart");
+const Course = require("../../models/course");
+const { createConnection } = require("mongoose");
+const router = new express.Router();
 require("dotenv").config();
 
-// Create a task
-router.post('/cart', auth, async (req, res) => {
-
-    try {
-        const verify = jwt.verify(req.token,process.env.ACCESS_TOKEN_SECRET,function (err,decoded){
-            if(err){
-                res.status(400).json({"message":"Failed to add course to cart",
-                "data":err
-            })}
-             });
-const user =req.user;
-        const course = await Course.findById(req.body.course_id);
-        //
-        if(course){
-            const cart =  Cart.findById();
-            
-            cart.save();
-
-        
+// Add item to cart
+router.post("/cart", auth, async (req, res) => {
+  try {
+    const verify = jwt.verify(
+      req.token,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, decoded) {
+        if (err) {
+          res
+            .status(400)
+            .json({ message: "Failed to add course to cart", data: err });
         }
-        
-        res.status(201).json({
-            "messaage":"Course added successfully to cart.",
-            "data":cart
-        })
-    } catch (e) {
-        res.status(400).json({"message":"Failed to add course to cart",
-        "data":e
-    }
-        )
-    }
-})
+      }
+    );
+    const user = req.user;
 
-// Read/list all tasks
-router.get('/tasks', auth, async (req, res) => {
-    const match = {};
-    const sort = {};
+    const course = await Course.findById(req.body.course_id);
 
-    if (req.query.completed) {
-        match.completed = req.query.completed === 'true';
-        console.log(match)
+    const cart = await Cart.findOne({ owner: req.user._id });
+    if (cart.items.includes(course._id)) {
+      res.status(200).json({
+        messaage: "The Course is already in the cart.",
+        data: cart,
+      });
+    } else {
+      cart.items.push(course);
+
+      cart.save();
     }
 
-    if (req.query.sortBy) {
-        const parts = req.query.sortBy.split(':')
-        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+    res.status(201).json({
+      messaage: "Course added successfully to cart.",
+      data: cart,
+    });
+  } catch (e) {
+    res.status(400).json({ message: "Failed to add course to cart", data: e });
+  }
+});
+
+router.get("/cart", auth, async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ owner: req.user._id });
+
+    if (cart) {
+      res.status(200).json({
+        message: "Cart items loaded successfully",
+        data: cart,
+      });
+    } else {
+      res.status(400).json({
+        message: "Retrieval of cart itens unsuccessful",
+        data: cart,
+      });
     }
-
-    try {
-        // const tasks = await Task.find({ owner: req.user._id })
-        const user = req.user;
-        await user.populate({
-            path: 'tasks',
-            match,
-            options: {
-                limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip),
-                sort
-            }
-        }).execPopulate();
-        console.log(user.tasks)
-        res.json({
-            "message":`${user.name}`+" task list loaded successfully",
-            "data":user.tasks})
-    } catch (e) {
-        res.status(500).json({
-            "message":"Failed to load the list",
-            "data":{}})
-    }
-})
-
-// Read/list a particular task
-router.get('/tasks/:id', auth, async (req, res) => {
-    const _id = req.params.id
-
-    try {
-        const task = await Task.findOne({ _id, owner: req.user._id })
-
-        if (!task) {
-            return res.status(404).send()
-        }
-
-        res.send(task)
-    } catch (e) {
-        res.status(500).send()
-    }
-})
+  } catch (e) {
+    res.status(400).json({
+      message: "Retrieval of cart itens unsuccessful",
+      data: e,
+    });
+  }
+});
 
 // Update a task by ID
-router.patch('/tasks/:id', auth, async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['description', 'completed']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+router.patch("/tasks/:id", auth, async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["description", "completed"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
 
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
+  if (!isValidOperation) {
+    return res.status(400).send({ error: "Invalid updates!" });
+  }
+
+  try {
+    // const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+    const task = await Task.findOne({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
+
+    if (!task) {
+      return res.status(404).send();
     }
 
-    try {
-        // const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+    updates.forEach((update) => (task[update] = req.body[update]));
+    await task.save();
 
-        const task = await Task.findOne({ _id: req.params.id, owner: req.user._id });
+    res.send(task);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
-        if (!task) {
-            return res.status(404).send()
-        }
+router.delete("/cart", auth, async (req, res) => {
 
-        updates.forEach(update => task[update] = req.body[update]);
-        await task.save();
+  try {
+  
+    const itemsToDelete = req.body.courses_id;
 
-        res.send(task)
-    } catch (e) {
-        res.status(400).send(e)
+    var cart = await Cart.findOne({
+        owner: req.user._id,
+      });
+    for (let i = 0; i<itemsToDelete.length;i++) {
+
+ if(cart.items.includes(itemsToDelete[i])){
+    const indexOfObject = cart.items.indexOf(itemsToDelete[i]);
+    cart.items.splice(indexOfObject, 1);
+ }
     }
-})
+    await cart.save();  
+    res.status(200).json({
+      message: "Course(s) successfully deleted.",
+      data: cart,
+    });
+  } catch (e) {
+    res.status(500).json({
+      message: "Server error.",
+      data: e,
+    });
+  }
+});
 
-// Delete a task by ID
-router.delete('/tasks/:id', auth, async (req, res) => {
-    try {
-        const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
-
-        if (!task) {
-            res.status(404).send()
-        }
-
-        res.send(task)
-    } catch (e) {
-        res.status(500).send()
-    }
-})
-
-module.exports = router
+module.exports = router;

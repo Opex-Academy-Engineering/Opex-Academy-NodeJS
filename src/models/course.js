@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Cart = require("./cart");
 
 const courseSchema = new mongoose.Schema(
   {
@@ -14,7 +15,12 @@ const courseSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-
+    price: {
+      type: String,
+      required: true,
+      trim: true,
+      default: "free",
+    },
     ratings: {
         type: Number,
         default:3,
@@ -36,6 +42,7 @@ const courseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
 
 const Course = mongoose.model("Course", courseSchema);
 

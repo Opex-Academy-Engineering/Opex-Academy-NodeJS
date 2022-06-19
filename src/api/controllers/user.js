@@ -10,6 +10,7 @@ const form = formidable({ multiples: true });
 
 var bodyParser = require('body-parser');
 const Cart = require('../../models/cart');
+const Kyc = require('../../models/kyc');
 var jsonParser = bodyParser.json()
 
 
@@ -27,7 +28,9 @@ const registerNewUser = (async (req, res,next) => {
     const user = new User({...fields});
     const token = await user.generateWebToken();
     const cart = new Cart({owner: user._id});
-cart.save();
+    const kyc = new Kyc({owner: user._id});
+    await cart.save();
+    await kyc.save();
 
       // const token = await user.generateWebToken();
 
@@ -112,7 +115,51 @@ cart.save();
 
     return res.status(200).send("Users");
   };
+/*
+*  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- 
+*/ 
+  const getKycInfo = async (req, res, next) => {
 
+    try{
+      const kycInfo = await Kyc.findOne({owner:req.user._id});
+      res.status(200).json({
+        "message":"Kyc info loaded.",
+        data:kycInfo
+      })
+    }catch(e){
+      res.status(500).json({
+        "message":"Server error",
+        data:e
+      })
+    }
+  };
+/*
+*  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- 
+*/ 
+  const toggleNotifications = async (req, res, next) => {
+    console.log('user')
+try{
+
+  const user = await User.findById(req.user._id);
+
+  user.notifications = !req.user.notifications;
+  await user.save();
+
+  res.status(200).json({
+    "message":`Notifications turned ${req.user.notifications?'off': 'on'}.`,
+    "data":user
+  })
+}catch(e){
+
+  res.status(500).json({
+    "message":"Server error.",
+    "data":e
+  })
+}
+  };
+/*
+*  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- 
+*/ 
   const returnUser = async (req, res, next) => {
 
     return res.status(200).send("Users");
@@ -121,6 +168,6 @@ cart.save();
 *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- 
 */ 
   module.exports = {
-    registerNewUser,loginUser,updateUser,returnUser,logoutUser
+    registerNewUser,loginUser,updateUser,returnUser,logoutUser,toggleNotifications,getKycInfo
   };
   

@@ -8,6 +8,7 @@ var bodyParser = require('body-parser')
 const userRouter = require('../src/api/routes/user');
 const courseRouter = require('../src/api/routes/course');
 const cartRouter = require('../src/api/routes/cart');
+const promoteRouter = require('../src/api/routes/promote');
 const envFile = require("dotenv").config();
 const mongoose = require('mongoose');
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json({ type: 'application/*+json' }))
 app.use(userRouter);
 app.use(cartRouter);
 app.use(courseRouter);
+app.use(promoteRouter);
 
 
 

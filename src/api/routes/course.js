@@ -45,36 +45,14 @@ await course.save();
 });
 
 // Read/list all tasks
-router.get('/tasks', auth, async (req, res) => {
-    const match = {};
-    const sort = {};
-
-    if (req.query.completed) {
-        match.completed = req.query.completed === 'true';
-        console.log(match)
-    }
-
-    if (req.query.sortBy) {
-        const parts = req.query.sortBy.split(':')
-        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
-    }
-
+router.get('/courses', auth, async (req, res) => {
+    const filter = {};
+    const allCourses = await Course.find(filter);
     try {
-        // const tasks = await Task.find({ owner: req.user._id })
-        const user = req.user;
-        await user.populate({
-            path: 'tasks',
-            match,
-            options: {
-                limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip),
-                sort
-            }
-        }).execPopulate();
-        console.log(user.tasks)
+
         res.json({
-            "message":`${user.name}`+" task list loaded successfully",
-            "data":user.tasks})
+            "message":"Loaded successfully",
+            "data":allCourses})
     } catch (e) {
         res.status(500).json({
             "message":"Failed to load the list",
@@ -83,19 +61,25 @@ router.get('/tasks', auth, async (req, res) => {
 })
 
 // Read/list a particular task
-router.get('/tasks/:id', auth, async (req, res) => {
-    const _id = req.params.id
+router.get('/course/free', auth, async (req, res) => {
+    const course = await Course.find({price:"free"});
 
     try {
-        const task = await Task.findOne({ _id, owner: req.user._id })
+      
 
-        if (!task) {
-            return res.status(404).send()
-        }
+    
+             res.status(200).json({
+                "message":"Free Courses list",
+                "data":course
+             })
+        
 
-        res.send(task)
+
     } catch (e) {
-        res.status(500).send()
+        res.status(500).json({
+            "message":"Failed to find free courses",
+            "data":course
+         })
     }
 })
 
@@ -127,19 +111,35 @@ router.patch('/tasks/:id', auth, async (req, res) => {
     }
 })
 
-// Delete a task by ID
-router.delete('/tasks/:id', auth, async (req, res) => {
+
+
+
+
+router.delete("/course", auth, async (req, res) => {
+
     try {
-        const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
+    
+      const itemToDelete = req.body.course_id;
+  
+      var course = await Course.findOneAndDelete({
+          _id: itemToDelete
+        });
 
-        if (!task) {
-            res.status(404).send()
-        }
-
-        res.send(task)
+      await course.save();  
+      res.status(200).json({
+        message: "Course(s) removed.",
+        data: cart,
+      });
     } catch (e) {
-        res.status(500).send()
+      res.status(500).json({
+        message: "Server error.",
+        data: e,
+      });
     }
-})
+  });
+
+
+
+
 
 module.exports = router

@@ -7,7 +7,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 const auth = require("../middleware/auth");
 
-const {registerNewUser,loginUser,logoutUser} = require('../controllers/user');
+const {registerNewUser,loginUser,logoutUser, toggleNotifications,getKycInfo} = require('../controllers/user');
 
 
 
@@ -17,6 +17,12 @@ router.post("/user/register",registerNewUser);
 
 //Login user
 router.post("/user/login",loginUser);
+
+//User notifications setting
+router.post("/user/notifications",auth,toggleNotifications);
+
+//User notifications setting
+router.get("/user/kyc",auth,getKycInfo);
 
 //Logout user 
 router.delete("/user/logout",auth,logoutUser);

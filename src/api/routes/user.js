@@ -21,7 +21,7 @@ router.post("/user/login",loginUser);
 //User notifications setting
 router.post("/user/notifications",auth,toggleNotifications);
 
-//User notifications setting
+//User kyc setting
 router.get("/user/kyc",auth,getKycInfo);
 
 //Logout user 

@@ -1,3 +1,6 @@
+#firebase related 
+./src/configs/firebase
+
 # Build and Release Folders
 bin-debug/
 bin-release/

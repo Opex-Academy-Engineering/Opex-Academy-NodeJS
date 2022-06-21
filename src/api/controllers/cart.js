@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const User = require("../../models/user");
 
 const auth = require("../middleware/auth");
+const Cart = require('../../models/cart')
 
 const formidable = require("formidable");
 const form = formidable({ multiples: true });
@@ -21,7 +22,7 @@ const addToCart = async (req, res) => {
       process.env.ACCESS_TOKEN_SECRET,
       function (err, decoded) {
         if (err) {
-          res
+          return res
             .status(400)
             .json({ message: "Failed to add course to cart", data: err });
         }
@@ -43,12 +44,12 @@ const addToCart = async (req, res) => {
       cart.save();
     }
 
-    res.status(201).json({
+    return res.status(200).json({
       messaage: "Course added successfully to cart.",
       data: cart,
     });
   } catch (e) {
-    res.status(400).json({ message: "Failed to add course to cart", data: e });
+    return res.status(400).json({ message: "Failed to add course to cart", data: e.messaage });
   }
 };
 /*
@@ -60,20 +61,21 @@ const retreiveUserCart = async (req, res) => {
     const cart = await Cart.findOne({ owner: req.user._id });
 
     if (cart) {
-      res.status(200).json({
+      return res.status(200).json({
         message: "Cart items loaded successfully",
         data: cart,
       });
     } else {
-      res.status(400).json({
-        message: "Retrieval of cart itens unsuccessful",
+
+      return res.status(500).json({
+        message: "Retrieval of cart items unsuccessful",
         data: cart,
       });
     }
   } catch (e) {
-    res.status(400).json({
-      message: "Retrieval of cart itens unsuccessful",
-      data: e,
+    return res.status(500).json({
+      message: "Retrieval of cart items unsuccessful",
+      data: e.messaage,
     });
   }
 };
@@ -95,14 +97,14 @@ const removeItemFromCart = async (req, res) => {
       }
     }
     await cart.save();
-    res.status(200).json({
+    return res.status(200).json({
       message: "Course(s) successfully deleted.",
       data: cart,
     });
   } catch (e) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server error.",
-      data: e,
+      data: e.messaage,
     });
   }
 };

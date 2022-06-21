@@ -1,12 +1,11 @@
-#firebase related 
-./src/configs/firebase
-
 # Build and Release Folders
 bin-debug/
 bin-release/
 [Oo]bj/
 [Bb]in/
 
+
+.env
 # Other files and folders
 .settings/
 

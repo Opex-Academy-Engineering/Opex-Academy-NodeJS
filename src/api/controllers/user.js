@@ -22,39 +22,36 @@ var jsonParser = bodyParser.json();
 const registerNewUser = async (req, res, next) => {
   form.parse(req, async (err, fields, files) => {
     try {
-      const isEmailAvailable = await User.findOne({email:fields.email});
-      console.log(isEmailAvailable)
- if(!isEmailAvailable){
-  const user = new User({ ...fields });
-  //upload profile_pic
-  // await addFile(files);
-  const token = await user.generateWebToken();
-  const cart = new Cart({ owner: user._id });
-  const kyc = new Kyc({ owner: user._id });
-  user.kyc = kyc;
-  await user.save();
-  await cart.save();
-  await kyc.save();
+      const isEmailAvailable = await User.findOne({ email: fields.email });
+      console.log(isEmailAvailable);
+      if (!isEmailAvailable) {
+        const user = new User({ ...fields });
+        //upload profile_pic
+        // await addFile(files);
+        const token = await user.generateWebToken();
+        const cart = new Cart({ owner: user._id });
+        const kyc = new Kyc({ owner: user._id });
+        user.kyc = kyc;
+        await user.save();
+        await cart.save();
+        await kyc.save();
 
-  // Sends the user and the generated token only
+        // Sends the user and the generated token only
 
-  return res.status(201).json({
-    message: "User created successfully",
-    data: {
-      user: user,
-      token: token,
-    },
-  });
- }else{
-  return response.status(400).json({
-    message: "A User with this email already exist.",
-    data: {
-     
-    },
-  });
- }
+        return res.status(201).json({
+          message: "User created successfully",
+          data: {
+            user: user,
+            token: token,
+          },
+        });
+      } else {
+        return response.status(400).json({
+          message: "A User with this email already exist.",
+          data: {},
+        });
+      }
     } catch (e) {
-
       return res.status(400).json({
         message: "Failed to create user",
         data: e.message,
@@ -68,15 +65,12 @@ const registerNewUser = async (req, res, next) => {
  */
 const getSpecificUser = async (req, res) => {
   try {
-
     const user = await User.findById(req.query.user_id);
-
 
     return res.status(200).json({
       message: `${user.name}'s profile`,
       data: {
         user: user,
-       
       },
     });
   } catch (error) {
@@ -92,8 +86,10 @@ const getSpecificUser = async (req, res) => {
  */
 const loginUser = async (req, res) => {
   try {
-
-    const user = await User.findByCredentials(req.body.email, req.body.password);
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
     const token = await user.generateWebToken();
 
     return res.status(200).json({
@@ -190,7 +186,6 @@ const changePassword = async (req, res, next) => {
       user.password
     );
     if (isCorrect) {
-
       user.password = req.body.new_password;
       await user.save();
       return res.status(200).json({
@@ -214,24 +209,24 @@ const changePassword = async (req, res, next) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const getAllUsers = async (req, res, next) => {
-  try{
-const users = await User.find({});
-if(users){
-  res.status(200).json({
-    "message":"All Users from the database.",
-    "data": users
-  })
-}else{
-  res.status(204).json({
-    "message":"No content",
-    "data": error.message
-  })
-}
-  }catch(error){
-res.status(500).json({
-  "message":"Server error",
-  "data": error.message
-})
+  try {
+    const users = await User.find({});
+    if (users) {
+      res.status(200).json({
+        message: "All Users from the database.",
+        data: users,
+      });
+    } else {
+      res.status(204).json({
+        message: "No content",
+        data: error.message,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      data: error.message,
+    });
   }
 };
 /*
@@ -253,5 +248,5 @@ module.exports = {
   getKycInfo,
   changePassword,
   getAllUsers,
-  getSpecificUser
+  getSpecificUser,
 };

@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const User = require("../../models/user");
 
 const auth = require("../middleware/auth");
-const Cart = require('../../models/cart')
+const Cart = require("../../models/cart");
 
 const formidable = require("formidable");
 const form = formidable({ multiples: true });
@@ -49,7 +49,9 @@ const addToCart = async (req, res) => {
       data: cart,
     });
   } catch (e) {
-    return res.status(400).json({ message: "Failed to add course to cart", data: e.messaage });
+    return res
+      .status(400)
+      .json({ message: "Failed to add course to cart", data: e.messaage });
   }
 };
 /*
@@ -66,7 +68,6 @@ const retreiveUserCart = async (req, res) => {
         data: cart,
       });
     } else {
-
       return res.status(500).json({
         message: "Retrieval of cart items unsuccessful",
         data: cart,

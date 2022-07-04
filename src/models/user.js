@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const roles = require("../constants/roles")
+const roles = require("../constants/roles");
 require("dotenv").config();
 
 // Schema for user
@@ -58,7 +58,8 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.String,
       required: true,
       default: roles.student,
-    },kyc:{ type: mongoose.Schema.Types.ObjectId, ref: "KYC" },
+    },
+    kyc: { type: mongoose.Schema.Types.ObjectId, ref: "KYC" },
     tokens: [
       {
         token: {
@@ -122,8 +123,6 @@ userSchema.pre("save", async function (next) {
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 8);
   }
-
-
 
   next();
 });

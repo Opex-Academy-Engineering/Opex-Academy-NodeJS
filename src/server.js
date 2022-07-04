@@ -2,7 +2,6 @@
 
 const express = require("express");
 const app = express();
-const http = require('http');
 const config = require("../src/configs/index");
 var bodyParser = require('body-parser')
 const userRouter = require('../src/api/routes/user');
@@ -16,7 +15,7 @@ const mongoose = require('mongoose');
 const paginate = require('express-paginate');;
 
  // keep this before all routes that will use pagination
-app.use(paginate.middleware(10, 50));
+// app.use(paginate.middleware(10, 50));
 app.use(express.json());
 app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(cors());
@@ -27,7 +26,7 @@ app.use(userRouter);
 app.use(cartRouter);
 app.use(courseRouter);
 app.use(searchRouter);
-app.use(promoteRouter);
+// app.use(promoteRouter);
 
 
 

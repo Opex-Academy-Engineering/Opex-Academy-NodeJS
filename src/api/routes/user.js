@@ -6,6 +6,14 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const auth = require("../middleware/auth");
 
+const accountSid = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // Your Account SID from www.twilio.com/console
+const authToken = 'your_auth_token'; // Your Auth Token from www.twilio.com/console
+
+const twilio = require('twilio');
+const client = new twilio(accountSid, authToken);
+
+
+
 const {
   registerNewUser,
   loginUser,
@@ -22,6 +30,27 @@ router.post("/user/register", registerNewUser);
 
 //Login user
 router.post("/user/login", loginUser);
+
+//TEST user
+router.post("/user/sms",  async (req, res) => {
+  try {
+    client.messages
+    .create({
+      body: 'Hello from Node',
+      to: '+12345678901', // Text this number
+      from: '+12345678901', // From a valid Twilio number
+    })
+    .then((message) => {
+      console.log(message.sid);
+      return res.status(200).json({"message": "Message sent"})
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "Failed to login",
+      data: error.message,
+    });
+  }
+});
 
 //User notifications setting
 router.post("/user/notifications", auth, toggleNotifications);

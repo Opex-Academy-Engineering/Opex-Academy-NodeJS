@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
+      required: false,
     },
     name: {
       type: String,
@@ -52,6 +53,7 @@ const userSchema = new mongoose.Schema(
     notifications: {
       type: Boolean,
       default: true,
+      required: false,
     },
 
     role: {

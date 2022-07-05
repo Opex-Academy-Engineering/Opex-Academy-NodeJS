@@ -37,8 +37,8 @@ router.post("/user/sms",  async (req, res) => {
     client.messages
     .create({
       body: 'Hello from Node',
-      to: '+12345678901', // Text this number
-      from: '+12345678901', // From a valid Twilio number
+      to: '+2348088889186', // Text this number
+      from: '++2348036183400', // From a valid Twilio number
     })
     .then((message) => {
       console.log(message.sid);

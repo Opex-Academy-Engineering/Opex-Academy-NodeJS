@@ -1,12 +1,12 @@
-const express = require("express");
-const authSuperAdmin = require("../middleware/authSuperAdmin");
-const router = new express.Router();
-const {promoteToAdmin} = require('../controllers/promote');
-require("dotenv").config();
+// const express = require("express");
+// const authAdmin = require("../middleware/authAdmin");
+// const router = new express.Router();
+// const {promoteToAdmin} = require('../controllers/promote');
+// require("dotenv").config();
 
-// Add item to cart
-router.put("/promote", authSuperAdmin, promoteToAdmin
-);
+// // // Add item to cart
+// // router.put("/promote", authAdmin, promoteToAdmin
+// // );
 
 
-module.exports = router;
+// module.exports = router;

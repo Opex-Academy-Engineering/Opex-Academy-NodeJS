@@ -1,6 +1,5 @@
 const Course = require("../../models/course");
 
-const paginate = require("express-paginate");
 
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --

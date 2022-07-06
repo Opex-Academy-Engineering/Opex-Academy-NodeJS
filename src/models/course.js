@@ -1,7 +1,6 @@
-// const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const Cart = require("./cart");
 const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
-const mongoose = require('mongoose-fill');
 const OwnedCourse = require("../models/ownedCourse");
 
 const courseSchema = new mongoose.Schema(
@@ -68,22 +67,22 @@ courseSchema.plugin(mongoose_fuzzy_searching, {
 
 })
 
-courseSchema.fill('students', function(callback){
-  // this.db.model('Course')
-  //     .find({parent: this.id})
-  //     .select('name age')
-  //     .order('-age')
-  //     .exec(callback);
+// courseSchema.fill('students', function(callback){
+//   // this.db.model('Course')
+//   //     .find({parent: this.id})
+//   //     .select('name age')
+//   //     .order('-age')
+//   //     .exec(callback);
 
 
-    const students = OwnedCourse
-      .find({course_id: this.id}).length.exec(callback)
-      console.log(students)
+//     const students = OwnedCourse
+//       .find({course_id: this.id}).length.exec(callback)
+//       console.log(students)
 
     
  
 
-})
+// })
 const Course = mongoose.model("Course", courseSchema);
 
 module.exports = Course;

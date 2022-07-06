@@ -6,8 +6,6 @@ const User = require("../../models/user");
 const auth = require("../middleware/auth");
 const Cart = require("../../models/cart");
 
-const formidable = require("formidable");
-const form = formidable({ multiples: true });
 
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();

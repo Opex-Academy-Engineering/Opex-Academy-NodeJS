@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Opex-Academy-NodeJS",
   "main": "src/server.js",
+  "engines"{
+
+  },
   "scripts": {
     "devStart": "nodemon src/server.js",
     "prodStart": "node src/server.js",

@@ -9,10 +9,8 @@ const auth = require("../middleware/auth");
 const accountSid = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // Your Account SID from www.twilio.com/console
 const authToken = 'your_auth_token'; // Your Auth Token from www.twilio.com/console
 
-const twilio = require('twilio');
-const client = new twilio(accountSid, authToken);
-
-
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 const {
   registerNewUser,
@@ -26,7 +24,7 @@ const {
 } = require("../controllers/user");
 
 // Create user
-router.post("/user/register", registerNewUser);
+router.post("/user/register",upload.single("profile_pic") ,registerNewUser);
 
 //Login user
 router.post("/user/login", loginUser);
@@ -38,7 +36,7 @@ router.post("/user/sms",  async (req, res) => {
     .create({
       body: 'Hello from Node',
       to: '+2348088889186', // Text this number
-      from: '++2348036183400', // From a valid Twilio number
+      from: '+2348036183400', // From a valid Twilio number
     })
     .then((message) => {
       console.log(message.sid);

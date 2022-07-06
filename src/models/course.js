@@ -34,10 +34,10 @@ const courseSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    tutor: {
+    facilitator: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "User",
+      ref: "Facilitator",
     },
  
     tags: 

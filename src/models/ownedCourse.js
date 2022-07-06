@@ -16,6 +16,6 @@ const ownedCourseSchema = new mongoose.Schema(
   }
 );
 
-const OwnedCourse = mongoose.model("OwnedCourseSchema", ownedCourseSchema);
+const OwnedCourse = mongoose.model("OwnedCourse", ownedCourseSchema);
 
 module.exports = OwnedCourse;

@@ -1,63 +1,87 @@
 "use strict";
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../../models/user");
 
-const auth = require("../middleware/auth");
+const { v4: uuidv4 } = require('uuid');
 
-const { addFile } = require("../utils/addFile");
-
-const formidable = require("formidable");
-const form = formidable({ multiples: true });
-
-var bodyParser = require("body-parser");
 const Cart = require("../../models/cart");
 const Kyc = require("../../models/kyc");
 const { response } = require("express");
-var jsonParser = bodyParser.json();
+
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
+const { getApp } = require("firebase/app");
+const {app} = require('../../configs/firebase')
+const {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} = require("firebase/storage");
+const { constants } = require("buffer");
 
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const registerNewUser = async (req, res, next) => {
-  form.parse(req, async (err, fields, files) => {
-    try {
-      const isEmailAvailable = await User.findOne({ email: fields.email });
-      console.log(isEmailAvailable);
-      if (!isEmailAvailable) {
-        const user = new User({ ...fields });
-        //upload profile_pic
-        // await addFile(files);
-        const token = await user.generateWebToken();
-        const cart = new Cart({ owner: user._id });
-        const kyc = new Kyc({ owner: user._id });
-        user.kyc = kyc;
-        await user.save();
-        await cart.save();
-        await kyc.save();
+  try {
+    //
+    const firebaseApp = getApp();
+    const storage = getStorage(
+      firebaseApp,
+      "gs://opex-academy-mobile.appspot.com"
+    );
 
-        // Sends the user and the generated token only
+    const file = req.file;
+    var img = require("fs").readFileSync(file.path);
 
-        return res.status(201).json({
-          message: "User created successfully",
-          data: {
-            user: user,
-            token: token,
-          },
-        });
-      } else {
-        return response.status(400).json({
-          message: "A User with this email already exist.",
-          data: {},
-        });
-      }
-    } catch (e) {
-      return res.status(400).json({
-        message: "Failed to create user",
-        data: e.message,
+
+    const uid = uuidv4();
+    //
+    const imagesRef = ref(storage, `images/${uid}.jpg`);
+  
+
+  await uploadBytes(imagesRef, img);
+  const profilePicurl = await       getDownloadURL(imagesRef, img)
+
+    const isEmailAvailable = await User.findOne({ email: req.body.email });
+
+
+    if (!isEmailAvailable) {
+      const user = new User({ ...req.body });
+      user.profile_pic = profilePicurl;
+    
+    
+      const token = await user.generateWebToken();
+      const cart = new Cart({ owner: user._id });
+      const kyc = new Kyc({ owner: user._id });
+      user.kyc = kyc;
+      await user.save();
+      await cart.save();
+      await kyc.save();
+
+      // Sends the user and the generated token only
+
+      return res.status(201).json({
+        message: "User created successfully",
+        data: {
+          user: user,
+          token: token,
+        },
+      });
+    } else {
+      return response.status(400).json({
+        message: "A User with this email already exist.",
+        data: {},
       });
     }
-  });
+  } catch (e) {
+    return res.status(400).json({
+      message: "Failed to create user",
+      data: e.message,
+    });
+  }
 };
 
 /*

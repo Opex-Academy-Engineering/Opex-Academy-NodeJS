@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Opex-Academy-NodeJS",
   "main": "src/server.js",
-  "engines"{
-
+  "engines":{
+    "node": "16.x",
+    "npm": "6.x"
   },
   "scripts": {
     "devStart": "nodemon src/server.js",

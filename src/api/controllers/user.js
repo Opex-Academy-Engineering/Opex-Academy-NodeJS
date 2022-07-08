@@ -21,31 +21,49 @@ const {
 } = require("firebase/storage");
 const { constants } = require("buffer");
 
+
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
+
+
+async function uploadDataToFireBaseStorage(data){
+ //
+ const firebaseApp = getApp();
+ const storage = getStorage(
+   firebaseApp,
+   "gs://opex-academy-mobile.appspot.com"
+ );
+
+ await uploadBytes(imagesRef, img);
+
+ const uploadedDataUrl = await getDownloadURL(imagesRef, img)
+
+ return uploadedDataUrl;
+}
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const registerNewUser = async (req, res, next) => {
+
   try {
-    //
-    const firebaseApp = getApp();
-    const storage = getStorage(
-      firebaseApp,
-      "gs://opex-academy-mobile.appspot.com"
-    );
-
-    const file = req.file;
-    var img = require("fs").readFileSync(file.path);
+    // const file = req.file;
+    // var img = require("fs").readFileSync(file.path);
 
 
-    const uid = uuidv4();
-    //
-    const imagesRef = ref(storage, `images/${uid}.jpg`);
-  
+    // const uid = uuidv4();
 
-  await uploadBytes(imagesRef, img);
-  const profilePicurl = await       getDownloadURL(imagesRef, img)
+    // //
+    // const imagesRef = ref(storage, `images/${uid}.jpg`);
+
+
+
+
+
 
     const isEmailAvailable = await User.findOne({ email: req.body.email });
+
 
 
     if (!isEmailAvailable) {
@@ -97,6 +115,28 @@ const getSpecificUser = async (req, res) => {
         user: user,
       },
     });
+  } catch (error) {
+    return res.status(400).json({
+      message: "Failed to retreive user",
+      data: error.message,
+    });
+  }
+};
+const verifyCode = async (req, res) => {
+  try {
+    let verificationCheck;
+    await client.verify.services(process.env.TWILIO_SERVICE_ID)
+      .verificationChecks
+      .create({to: req.body.phone_no, channel: 'sms', amount:'', payee:'', code:req.body.code})
+      .then(verification_check =>{ console.log(`Said situation: ${verification_check}`)
+      verificationCheck = verification_check;
+      });
+
+      return res.status(200).json({
+        "message":"verified",
+        "data": verificationCheck
+      })
+
   } catch (error) {
     return res.status(400).json({
       message: "Failed to retreive user",
@@ -256,6 +296,34 @@ const getAllUsers = async (req, res, next) => {
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
+const sendVerificationCodeToUser = async (req, res, next) => {
+  try {
+    const sendVerificationCode =await client.verify.services(process.env.TWILIO_SERVICE_ID)
+    .verifications
+    .create({to: req.body.phone_no, channel: 'sms', amount:'', payee:''});
+
+
+    if (sendVerificationCode) {
+      res.status(200).json({
+        message: "Verification code sent successfully",
+        data: users,
+      });
+    } else {
+      res.status(204).json({
+        message: "No content",
+        data: error.message,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      data: error.message,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
 const returnUser = async (req, res, next) => {
   return res.status(200).send("Users");
 };
@@ -273,4 +341,5 @@ module.exports = {
   changePassword,
   getAllUsers,
   getSpecificUser,
+  verifyCode
 };

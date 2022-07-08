@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "Opex-Academy-NodeJS",
   "main": "src/server.js",
-  "engines": {
-    "node": ">=14",
-    "npm": "6.x"
-  },
   "scripts": {
     "devStart": "nodemon src/server.js",
     "prodStart": "node src/server.js",
@@ -37,8 +33,12 @@
     "node-pre-gyp": "^0.17.0",
     "npm": "^8.13.2",
     "sha256": "^0.2.0",
+    "twilio": "^3.78.0",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",
     "xhr2": "^0.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
   }
 }

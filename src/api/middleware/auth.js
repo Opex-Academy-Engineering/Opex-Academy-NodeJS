@@ -9,6 +9,10 @@ const auth = async (req, res, next) => {
 
     const user = await User.findOne({ _id: payload._id });
 
+    res.setHeader('Access-Control-Allow-Origin','*');
+    res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
+    res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
+
     if (!user) {
       throw new Error("User not found");
     }

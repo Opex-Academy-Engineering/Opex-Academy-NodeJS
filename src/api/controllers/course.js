@@ -61,25 +61,27 @@ const getAllCourses = async (req, res) => {
 
 const comfirmPayAndAddCourseToUser = async (req, res) => {
   try {
+   
     //const views = await OwnedCourse.find().sort({ students : criteria}).exec(function(err, model){  });
     const course = await Course.findById(req.body.course_id);
     const user = req.user;
-    console.log()
-    if (course !== null) {
-      console.log(found)
+
+    if (course) {
+
       const newOwnedCourse = await new OwnedCourse({
-        course_id: req.body.course_id,
+        course: course,
         owner: req.user,
-      });
+      })
+      console.log(req.user)
 
       await newOwnedCourse.save();
       return res.status(200).json({
-        message: `Course added to ${user.name}`,
+        message: `Course added to ${user.name}\'s course list`,
         data: newOwnedCourse,
       });
     } else {
       return res.status(400).json({
-        message: `No course was found having the id: ${req.body.course_id}`,
+        message: `No course was found with the id: ${req.body.course_id}`,
         data: newOwnedCourse,
       });
     }
@@ -116,16 +118,50 @@ const getPopularCourses = async (req, res) => {
  */
 
 const getAllFreeCourses = async (req, res) => {
-  const course = await Course.find({ price: "free" });
-
   try {
+    const courses = await Course.find({ price: "free" });
     return res.status(200).json({
       message: "Free Courses list",
-      data: course,
+      data: courses,
     });
   } catch (e) {
     return res.status(500).json({
       message: "Failed to find free courses",
+      data: e.messaage,
+    });
+  }
+};
+
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
+const getUserActiveCourses = async (req, res) => {
+  try {
+    const courses = await OwnedCourse.find({ owner: req.user._id });
+    return res.status(200).json({
+      message: `All of ${req.user.name} Courses list`,
+      data: courses,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: "Failed to find active courses",
+      data: e.messaage,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
+const getAllBoughtCourses = async (req, res) => {
+  try {
+    const courses = await OwnedCourse.find({});
+    return res.status(200).json({
+      message: 'All bought Courses list',
+      data: courses,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: "Failed to find courses",
       data: e.messaage,
     });
   }
@@ -164,4 +200,6 @@ module.exports = {
   getAllFreeCourses,
   deleteCourse,
   comfirmPayAndAddCourseToUser,
+  getUserActiveCourses,
+  getAllBoughtCourses
 };

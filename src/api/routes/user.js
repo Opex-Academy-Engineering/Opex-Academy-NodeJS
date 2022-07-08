@@ -6,9 +6,6 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const auth = require("../middleware/auth");
 
-const accountSid = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // Your Account SID from www.twilio.com/console
-const authToken = 'your_auth_token'; // Your Auth Token from www.twilio.com/console
-
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
@@ -20,11 +17,18 @@ const {
   getKycInfo,
   changePassword,
   getAllUsers,
-  getSpecificUser
+  getSpecificUser,
+  verifyCode
 } = require("../controllers/user");
 
+
+
 // Create user
-router.post("/user/register",upload.single("profile_pic") ,registerNewUser);
+router.post("/user/register",registerNewUser);
+// Verify code
+router.post("/user/verify", verifyCode
+
+);
 
 //Login user
 router.post("/user/login", loginUser);

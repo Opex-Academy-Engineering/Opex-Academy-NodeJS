@@ -49,3 +49,10 @@ main().catch((err) => console.log(err));
 app.listen(config.PORT, () => {
   console.log("Server running on " + config.PORT);
 });
+
+//Add this to the package.json should you have problems syncing it to the 
+//heroku live server
+// "engines": {
+//   "node": ">=14",
+//   "npm": "6.x"
+// },

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Cart = require("./cart");
 const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
-const OwnedCourse = require("../models/ownedCourse");
+const OwnedCourse = require("../models/ownedCourse").default;
 
 const courseSchema = new mongoose.Schema(
   {

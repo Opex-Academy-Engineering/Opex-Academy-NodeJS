@@ -3,6 +3,7 @@
  const student = 'student';
 
  const powers = {
+  
    'admin': 2,
    'student': 1
  };

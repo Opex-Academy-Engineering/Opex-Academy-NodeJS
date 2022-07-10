@@ -18,41 +18,23 @@ const {
   changePassword,
   getAllUsers,
   getSpecificUser,
-  verifyCode
+  verifyCode,
+  sendCode
 } = require("../controllers/user");
 
 
 
 // Create user
 router.post("/user/register",registerNewUser);
-// Verify code
-router.post("/user/verify", verifyCode
 
-);
+// send code
+router.post("/user/send-code", sendCode);
+
+// Verify code
+router.post("/user/verify", verifyCode);
 
 //Login user
 router.post("/user/login", loginUser);
-
-//TEST user
-router.post("/user/sms",  async (req, res) => {
-  try {
-    client.messages
-    .create({
-      body: 'Hello from Node',
-      to: '+2348088889186', // Text this number
-      from: '+2348036183400', // From a valid Twilio number
-    })
-    .then((message) => {
-      console.log(message.sid);
-      return res.status(200).json({"message": "Message sent"})
-    });
-  } catch (error) {
-    return res.status(400).json({
-      message: "Failed to login",
-      data: error.message,
-    });
-  }
-});
 
 //User notifications setting
 router.post("/user/notifications", auth, toggleNotifications);

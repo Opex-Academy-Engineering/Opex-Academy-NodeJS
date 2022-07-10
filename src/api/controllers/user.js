@@ -1,6 +1,6 @@
 "use strict";
 const bcrypt = require("bcrypt");
-const User = require("../../models/user");
+const User = require('../../models/user')
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -45,7 +45,7 @@ async function uploadDataToFireBaseStorage(data){
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
-const registerNewUser = async (req, res, next) => {
+const registerNewUser = async (req, res) => {
 
   try {
     // const file = req.file;
@@ -57,20 +57,15 @@ const registerNewUser = async (req, res, next) => {
     // //
     // const imagesRef = ref(storage, `images/${uid}.jpg`);
 
-
-
-
-
-
     const isEmailAvailable = await User.findOne({ email: req.body.email });
-
-
-
     if (!isEmailAvailable) {
-      const user = new User({ ...req.body });
-      user.profile_pic = profilePicurl;
-    
-    
+      const user = await new User({ email:req.body.email,
+      phone_no:req.body.phone_no,
+      password:req.body.password,
+      name:req.body.name
+      });
+      console.log(user)
+
       const token = await user.generateWebToken();
       const cart = new Cart({ owner: user._id });
       const kyc = new Kyc({ owner: user._id });
@@ -89,13 +84,13 @@ const registerNewUser = async (req, res, next) => {
         },
       });
     } else {
-      return response.status(400).json({
+      return res.status(400).json({
         message: "A User with this email already exist.",
         data: {},
       });
     }
   } catch (e) {
-    return res.status(400).json({
+    return res.status(500).json({
       message: "Failed to create user",
       data: e.message,
     });
@@ -122,24 +117,47 @@ const getSpecificUser = async (req, res) => {
     });
   }
 };
-const verifyCode = async (req, res) => {
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
+const sendCode = async (req, res) => {
   try {
-    let verificationCheck;
-    await client.verify.services(process.env.TWILIO_SERVICE_ID)
-      .verificationChecks
-      .create({to: req.body.phone_no, channel: 'sms', amount:'', payee:'', code:req.body.code})
-      .then(verification_check =>{ console.log(`Said situation: ${verification_check}`)
-      verificationCheck = verification_check;
-      });
+    const verificationCheck = await client.verify.v2.services(process.env.TWILIO_SERVICE_ID)
+      .verifications
+      .create({to: req.body.phone_no, channel: 'sms', amount:'', payee:'',})
+
 
       return res.status(200).json({
-        "message":"verified",
+        "message":`SMS sent successfully to ${req.body.phone_no}`,
         "data": verificationCheck
       })
 
   } catch (error) {
     return res.status(400).json({
-      message: "Failed to retreive user",
+      message: `Failed to send text to ${req.body.phone_no}`,
+      data: error.message,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
+const verifyCode = async (req, res) => {
+  try {
+ 
+
+    const verificationCheck = await client.verify.services(process.env.TWILIO_SERVICE_ID)
+      .verificationChecks
+      .create({to: req.body.phone_no, channel: 'sms', amount:'', payee:'', code:req.body.code});
+
+      return res.status(200).json({
+        "message":"User verified",
+        "data": verificationCheck
+      })
+
+  } catch (error) {
+    return res.status(400).json({
+      message: "Failed to verify user",
       data: error.message,
     });
   }
@@ -341,5 +359,6 @@ module.exports = {
   changePassword,
   getAllUsers,
   getSpecificUser,
-  verifyCode
+  verifyCode,
+  sendCode
 };

@@ -15,21 +15,26 @@ const authToken = 'your_auth_token'; // Your Auth Token from www.twilio.com/cons
 const {
   registerNewFacilitator,
   getAllFacilitators,
-  deleteFacilitators
+  deleteFacilitators,
+  toggleFacilitatorStatus,
+  getFacilitatorInfo
 } = require("../controllers/facilitator");
 
 // Create facilitator
 router.post("/facilitator/register",upload.single("profile_pic") ,registerNewFacilitator);
 
 
-// //User notifications setting
-// router.post("/user/notifications", auth, toggleNotifications);
+//Toggle Facilitator activity status
+router.post("/facilitator", auth, toggleFacilitatorStatus);
 
 // //User kyc setting
 // router.get("/user/kyc", auth, getKycInfo);
 
 //Get all facilitators
 router.get("/facilitators", getAllFacilitators);
+
+//Get all facilitators
+router.get("/facilitator/info", getFacilitatorInfo);
 
 // //Get a specific user
 // router.get("/user", auth, getSpecificUser);

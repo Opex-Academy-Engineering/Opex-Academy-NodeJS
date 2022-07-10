@@ -75,18 +75,19 @@ function padNumber(number) {
 
   return number;
 }
-facilitatorSchema.pre("save", async function (next) {
-  try {
 
-    const facilitator = this;
+// facilitatorSchema.pre("save", async function (next) {
+//   try {
+
+//     const facilitator = this;
 
 
-    // facilitator._id = (0001 +parseInt( lastFacilitator[0]._id.toString())).toString()
+//     // facilitator._id = (0001 +parseInt( lastFacilitator[0]._id.toString())).toString()
 
-    next();
-  } catch (error) {
-    throw new Error("Unable to add facilitator");
-  }
-});
+//     next();
+//   } catch (error) {
+//     throw new Error("Unable to add facilitator");
+//   }
+// });
 
 module.exports = Facilitator;

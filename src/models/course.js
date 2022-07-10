@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Cart = require("./cart");
-const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const OwnedCourse = require("../models/ownedCourse").default;
 
 const courseSchema = new mongoose.Schema(
@@ -49,23 +48,18 @@ const courseSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJSON: {
-      virtuals: true 
-    },
-    toObject: {
-      virtuals: true
-    },
   },
 );
 
 
+var autoPopulateLead = function(next) {
+  this.populate('facilitator');
+  next();
+};
 
-
-courseSchema.plugin(mongoose_fuzzy_searching, {
-  fields: ["title",{ name: 'tags',
-  keys: ['first_tag', 'second_tag'],}],
-
-})
+courseSchema.
+  pre('findOne', autoPopulateLead).
+  pre('find', autoPopulateLead);
 
 // courseSchema.fill('students', function(callback){
 //   // this.db.model('Course')

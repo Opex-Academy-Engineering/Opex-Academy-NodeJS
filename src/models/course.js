@@ -37,7 +37,6 @@ const courseSchema = new mongoose.Schema(
       required: true,
       ref: "Facilitator",
     },
- 
     tags: 
       {
         first_tag: String,

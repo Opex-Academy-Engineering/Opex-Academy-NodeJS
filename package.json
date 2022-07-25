@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Opex-Academy-NodeJS",
   "main": "src/server.js",
-  "engines":{
-    "node":"18.4.0",
-    "npm":"8.12.1"
+  "engines": {
+    "node": "18.4.0",
+    "npm": "8.12.1"
   },
   "scripts": {
     "devStart": "nodemon src/server.js",
@@ -36,7 +36,7 @@
     "node-pre-gyp": "^0.17.0",
     "npm": "^8.13.2",
     "sha256": "^0.2.0",
-    "twilio": "^3.78.0",
+    "twilio": "^3.80.0",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",
     "xhr2": "^0.2.1"

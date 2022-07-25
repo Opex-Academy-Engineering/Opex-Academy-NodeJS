@@ -6,8 +6,9 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const auth = require("../middleware/auth");
 
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const multer  = require('multer')
+const storage = multer.memoryStorage();
+const upload = multer({preservePath:true,limits:2,storage: storage});
 
 const {
   registerNewUser,
@@ -19,13 +20,18 @@ const {
   getAllUsers,
   getSpecificUser,
   verifyCode,
-  sendCode
+  sendCode,
+  registerOrLoginWithGoogle,
+  checkTokenValidity
 } = require("../controllers/user");
 
 
 
 // Create user
-router.post("/user/register",registerNewUser);
+router.post("/user/register",upload.single('profile_pic'),registerNewUser);
+
+//Check token validity
+router.post("/user/token-validity",auth,checkTokenValidity);
 
 // send code
 router.post("/user/send-code", sendCode);

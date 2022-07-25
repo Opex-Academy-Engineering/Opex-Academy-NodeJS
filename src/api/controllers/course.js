@@ -6,17 +6,55 @@ const OwnedCourse = require("../../models/ownedCourse");
 const Course = require("../../models/course");
 const authAdmin = require("../../api/middleware/authAdmin");
 const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require('uuid');
+const fs = require("fs");
+
+const { getApp } = require("firebase/app");
+const {app} = require('../../configs/firebase')
+const {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} = require("firebase/storage");
+const { constants } = require("buffer");
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 
 //
 
+
 const createCourse = async (req, res) => {
   try {
-    // const token = req.header("Authorization").replace("Bearer ", "");
-    // const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const facilitator = await Facilitator.findById("62c4dcb20e463638cd1da4e6");
+    const file = req.files.course_header_image;
+
+    const uid = uuidv4();
+    const firebaseApp = getApp();
+    const storage = getStorage(
+      firebaseApp,
+      "gs://opex-academy-mobile.appspot.com"
+    );
+
+
+
+    //
+    const imagesRef = ref(storage, `images/${uid}`);
+
+    //  let byteArray =  fs.readFileSync(file[0].path);
+ 
+    const trial = await uploadBytes(imagesRef, file[0]);
+   
+
+    const uploadedDataUrl = await getDownloadURL(imagesRef, img).then(result=>{
+      console.log(result)
+    });
+    // const deleteData = fs.unlinkSync(filePath);
+    const facilitator = await Facilitator.findOne({
+      facilitator_id: req.body.facilitator_id,
+    });
+
+
 
     if (facilitator) {
       const doesCourseExists = await Course.findOne({ title: req.body.title });
@@ -24,6 +62,7 @@ const createCourse = async (req, res) => {
         const course = new Course({
           title: req.body.title,
           description: req.body.description,
+          course_header_image: uploadedDataUrl,
           facilitator: facilitator,
         });
 
@@ -85,7 +124,6 @@ const comfirmPayAndAddCourseToUser = async (req, res) => {
         course: course,
         owner: req.user,
       });
-      console.log(req.user);
 
       await newOwnedCourse.save();
       return res.status(200).json({
@@ -111,12 +149,25 @@ const comfirmPayAndAddCourseToUser = async (req, res) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const getPopularCourses = async (req, res) => {
-  const course = await Course.find({ price: "free" }).populate("facilitator");
+  const course = await Course.find({ price: "free" });
+  var coursesStudentCount = {};
+  //Get all the courses
+  const allExistingCourses = await Course.find({});
+  //Add every new Id to a list 
+  if(allExistingCourses){
+    for(var x in allExistingCourses){
+      var count = await OwnedCourse.find({course: allExistingCourses[x]});
+
+if(count){
+  coursesStudentCount[ allExistingCourses[x]._id] = count.length;
+}
+    }
+  }
 
   try {
     return res.status(200).json({
       message: "Free Courses list",
-      data: course,
+      data: coursesStudentCount,
     });
   } catch (e) {
     return res.status(500).json({
@@ -169,9 +220,33 @@ const getUserActiveCourses = async (req, res) => {
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
+const returnCoursesObject = async (req, res) => {
+  var returnVal = [];
+  const courseList = req.body.courses;
+  if(courseList.length > 0){
+    for(var x in courseList){
+      returnVal.push(await Course.findById(courseList[x]));
+    }
+  }
+  try {
+    const courses = await OwnedCourse.find({});
+    return res.status(200).json({
+      message: "All bought Courses list",
+      data: returnVal,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: "Failed to find courses",
+      data: e.messaage,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
 const getAllBoughtCourses = async (req, res) => {
   try {
-    const courses = await OwnedCourse.find({}).populate("facilitator");
+    const courses = await OwnedCourse.find({});
     return res.status(200).json({
       message: "All bought Courses list",
       data: courses,
@@ -219,4 +294,5 @@ module.exports = {
   comfirmPayAndAddCourseToUser,
   getUserActiveCourses,
   getAllBoughtCourses,
+  returnCoursesObject
 };

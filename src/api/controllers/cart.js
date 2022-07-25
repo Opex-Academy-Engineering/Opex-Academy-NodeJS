@@ -2,6 +2,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../../models/user");
+const Course = require("../../models/course");
 
 const auth = require("../middleware/auth");
 const Cart = require("../../models/cart");
@@ -15,17 +16,17 @@ var jsonParser = bodyParser.json();
  */
 const addToCart = async (req, res) => {
   try {
-    const verify = jwt.verify(
-      req.token,
-      process.env.ACCESS_TOKEN_SECRET,
-      function (err, decoded) {
-        if (err) {
-          return res
-            .status(400)
-            .json({ message: "Failed to add course to cart", data: err });
-        }
-      }
-    );
+    // const verify = jwt.verify(
+    //   req.token,
+    //   process.env.ACCESS_TOKEN_SECRET,
+    //   function (err, decoded) {
+    //     if (err) {
+    //       return res
+    //         .status(400)
+    //         .json({ message: "Failed to add course to cart", data: err });
+    //     }
+    //   }
+    // );
     const user = req.user;
 
     const course = await Course.findById(req.body.course_id);

@@ -2,10 +2,9 @@ const express = require('express')
 const authAdmin = require('../middleware/authAdmin')
 const auth = require('../middleware/auth')
 const router = new express.Router()
-const {createCourse,getAllCourses,getAllFreeCourses,getPopularCourses,deleteCourse,comfirmPayAndAddCourseToUser,getUserActiveCourses,getAllBoughtCourses,getFacilitatorInfo} = require('../controllers/course')
+const {returnCoursesObject,createCourse,getAllCourses,getAllFreeCourses,getPopularCourses,deleteCourse,comfirmPayAndAddCourseToUser,getUserActiveCourses,getAllBoughtCourses} = require('../controllers/course')
 const multer  = require('multer')
-const storage = multer.memoryStorage();
-const upload = multer({preservePath:true,limits:50,storage: storage});
+const upload = multer()
 
 
 require("dotenv").config();
@@ -13,6 +12,9 @@ require("dotenv").config();
 // Create a course
 const cpUpload = upload.fields([{ name: 'course_header_image', maxCount: 1 }, { name: 'media_upload', maxCount: 49,minCount:0 }])
 router.post('/course', cpUpload, createCourse);
+
+//return course information
+router.post('/course/info', cpUpload, returnCoursesObject);
 
 // get most-popular courses
 router.get('/courses/most-popular', auth, getPopularCourses);

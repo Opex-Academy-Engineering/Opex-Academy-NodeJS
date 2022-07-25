@@ -9,6 +9,7 @@ const courseRouter = require('../src/api/routes/course');
 const cartRouter = require('../src/api/routes/cart');
 const facilitatorRouter = require('../src/api/routes/facilitator');
 const searchRouter = require('../src/api/routes/search');
+
 const cors = require('cors');
 
 const mongoose = require('mongoose');
@@ -20,12 +21,12 @@ app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-
 app.use(userRouter);
 app.use(cartRouter);
 app.use(courseRouter);
 app.use(searchRouter);
 app.use(facilitatorRouter);
+
 
 
 

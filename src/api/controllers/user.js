@@ -341,7 +341,7 @@ const getSpecificUser = async (req, res) => {
 const sendCode = async (req, res) => {
   try {
     const verificationCheck = await client.verify.v2
-      .services(process.env.TWILIO_SERVICE_ID)
+      .services(process.env.TWILIO_SERVICE_SID)
       .verifications.create({
         to: req.body.phone_no,
         channel: "sms",
@@ -365,11 +365,12 @@ const sendCode = async (req, res) => {
  */
 const verifyCode = async (req, res) => {
   try {
-    const verificationCheck = await client.verify.v2
-      .services(process.env.TWILIO_SERVICE_ID)
+    const verificationCheck =  await client.verify.v2
+    .services(process.env.TWILIO_SERVICE_SID)
       .verificationChecks.create({
         to: req.body.phone_no,
         code: req.body.code,
+      channel:"sms",
         amount: "",
         payee: "",
       })
@@ -571,8 +572,8 @@ const getAllUsers = async (req, res, next) => {
  */
 const sendVerificationCodeToUser = async (req, res, next) => {
   try {
-    const sendVerificationCode = await client.verify
-      .services(process.env.TWILIO_SERVICE_ID)
+    const sendVerificationCode = await client.verify.v2
+      .services(process.env.TWILIO_SERVICE_SID)
       .verifications.create({
         to: req.body.phone_no,
         channel: "sms",

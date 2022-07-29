@@ -94,7 +94,7 @@ const registerNewUser = async (req, res) => {
         {
           
           const isEmailAvailable = await User.findOne({ email: req.body.email });
-          isEmailAvailable.populate('kycgitggggggggg')
+          isEmailAvailable.populate('kyc')
           if (!isEmailAvailable) {
             const user =  new User({
               email: req.body.email,

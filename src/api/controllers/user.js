@@ -94,6 +94,7 @@ const registerNewUser = async (req, res) => {
         {
           
           const isEmailAvailable = await User.findOne({ email: req.body.email });
+          isEmailAvailable.populate('kycgitggggggggg')
           if (!isEmailAvailable) {
             const user =  new User({
               email: req.body.email,
@@ -125,7 +126,9 @@ const registerNewUser = async (req, res) => {
        
             return res.status(202).json({
               message: "A User with this email already exist. Here use this web token instead",
-              data: webToken,
+              data: {
+                user:isEmailAvailable,
+                token:webToken},
             });
           }else{
 

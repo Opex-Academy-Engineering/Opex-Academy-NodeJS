@@ -71,7 +71,7 @@ const registerNewUser = async (req, res) => {
             },
           });
         } else if(isEmailAvailable.login_type == "GOOGLE"){
-     
+          await isEmailAvailable.populate('kyc');
           const webToken = await isEmailAvailable.generateWebToken();
 
           return res.status(202).json({

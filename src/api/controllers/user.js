@@ -94,7 +94,7 @@ const registerNewUser = async (req, res) => {
         {
           
           const isEmailAvailable = await User.findOne({ email: req.body.email });
-          isEmailAvailable.populate('kyc')
+
           if (!isEmailAvailable) {
             const user =  new User({
               email: req.body.email,
@@ -122,6 +122,7 @@ const registerNewUser = async (req, res) => {
               },
             });
           } else if(isEmailAvailable.login_type == "FACEBOOK"){
+            isEmailAvailable.populate('kyc')
             const webToken = await isEmailAvailable.generateWebToken();
        
             return res.status(202).json({
@@ -131,7 +132,6 @@ const registerNewUser = async (req, res) => {
                 token:webToken},
             });
           }else{
-
             return res.status(400).json({
               message: "A User with this email already exist.",
               data: {}});

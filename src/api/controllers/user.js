@@ -64,7 +64,7 @@ const registerNewUser = async (req, res) => {
           // Sends the user and the generated token only
 
           return res.status(201).json({
-            message: "User created successfully",
+            message: "bUser created successfully",
             data: {
               user: user,
               token: token,
@@ -75,7 +75,7 @@ const registerNewUser = async (req, res) => {
           const webToken = await isEmailAvailable.generateWebToken();
 
           return res.status(202).json({
-            message: "A User with this email already exist. Here use this web token instead",
+            message: "bA User with this email already exist. Here use this web token instead",
             data: {
               "user":isEmailAvailable,
               "token":webToken
@@ -85,7 +85,7 @@ const registerNewUser = async (req, res) => {
 
      
           return res.status(400).json({
-            message: "A User with this email already exist.",
+            message: "bA User with this email already exist.",
             data: {}});
         }
       }

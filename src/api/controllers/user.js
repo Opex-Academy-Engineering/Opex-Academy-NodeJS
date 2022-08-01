@@ -356,9 +356,9 @@ const sendCode = async (req, res) => {
       message: `SMS sent successfully to ${req.body.phone_no}`,
       data: verificationCheck,
     });
-  } catch (error) {
+  }  catch (error) {
     return res.status(400).json({
-      message: `Failed to send text to ${req.body.phone_no}`,
+      message: `Failed to send texto to ${req.body.phone_no}`,
       data: error.message,
     });
   }

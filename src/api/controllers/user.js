@@ -40,69 +40,18 @@ const registerNewUser = async (req, res) => {
     const type = req.body.login_type;
 
     switch (type) {
-     
-      case userTypes.googleUser:  {
-
-        const isEmailAvailable = await User.findOne({ email: req.body.email });
-        if (!isEmailAvailable) {
-          const user =  new User({
-            email: req.body.email,
-            name: req.body.name,
-            login_type:req.body.login_type,
-            profile_pic: req.body.profile_pic,
-          });
-
-
-          const token = await user.generateWebToken();
-          const cart = new Cart({ owner: user._id });
-          const kyc = new Kyc({ owner: user._id });
-          user.kyc = kyc;
-          await user.save();
-          await cart.save();
-          await kyc.save();
-
-          // Sends the user and the generated token only
-
-          return res.status(201).json({
-            message: "User created successfully",
-            data: {
-              user: user,
-              token: token,
-            },
-          });
-        } else if(isEmailAvailable.login_type == "GOOGLE"){
-          await isEmailAvailable.populate('kyc');
-          const webToken = await isEmailAvailable.generateWebToken();
-
-          return res.status(202).json({
-            message: "A User with this email already exist. Here use this web token instead",
-            data: {
-              "user":isEmailAvailable,
-              "token":webToken
-            },
-          });
-        }else{
-
-     
-          return res.status(400).json({
-            message: "A User with this email already exist.",
-            data: {}});
-        }
-      }
-      break;
-      case userTypes.facebookUser:
+      case userTypes.googleUser:
         {
-          
-          const isEmailAvailable = await User.findOne({ email: req.body.email });
-
+          const isEmailAvailable = await User.findOne({
+            email: req.body.email,
+          });
           if (!isEmailAvailable) {
-            const user =  new User({
+            const user = new User({
               email: req.body.email,
               name: req.body.name,
-              login_type:req.body.login_type,
+              login_type: req.body.login_type,
               profile_pic: req.body.profile_pic,
             });
-
 
             const token = await user.generateWebToken();
             const cart = new Cart({ owner: user._id });
@@ -121,20 +70,74 @@ const registerNewUser = async (req, res) => {
                 token: token,
               },
             });
-          } else if(isEmailAvailable.login_type == "FACEBOOK"){
-            isEmailAvailable.populate('kyc')
+          } else if (isEmailAvailable.login_type == "GOOGLE") {
+            await isEmailAvailable.populate("kyc");
             const webToken = await isEmailAvailable.generateWebToken();
-       
+
             return res.status(202).json({
-              message: "A User with this email already exist. Here use this web token instead",
+              message:
+                "A User with this email already exist. Here use this web token instead",
               data: {
-                user:isEmailAvailable,
-                token:webToken},
+                user: isEmailAvailable,
+                token: webToken,
+              },
             });
-          }else{
+          } else {
             return res.status(400).json({
               message: "A User with this email already exist.",
-              data: {}});
+              data: {},
+            });
+          }
+        }
+        break;
+      case userTypes.facebookUser:
+        {
+          const isEmailAvailable = await User.findOne({
+            email: req.body.email,
+          });
+
+          if (!isEmailAvailable) {
+            const user = new User({
+              email: req.body.email,
+              name: req.body.name,
+              login_type: req.body.login_type,
+              profile_pic: req.body.profile_pic,
+            });
+
+            const token = await user.generateWebToken();
+            const cart = new Cart({ owner: user._id });
+            const kyc = new Kyc({ owner: user._id });
+            user.kyc = kyc;
+            await user.save();
+            await cart.save();
+            await kyc.save();
+
+            // Sends the user and the generated token only
+
+            return res.status(201).json({
+              message: "User created successfully",
+              data: {
+                user: user,
+                token: token,
+              },
+            });
+          } else if (isEmailAvailable.login_type == "FACEBOOK") {
+            isEmailAvailable.populate("kyc");
+            const webToken = await isEmailAvailable.generateWebToken();
+
+            return res.status(202).json({
+              message:
+                "A User with this email already exist. Here use this web token instead",
+              data: {
+                user: isEmailAvailable,
+                token: webToken,
+              },
+            });
+          } else {
+            return res.status(400).json({
+              message: "A User with this email already exist.",
+              data: {},
+            });
           }
         }
         break;
@@ -189,7 +192,8 @@ const registerNewUser = async (req, res) => {
           }
         }
         break;
-        default:{
+      default:
+        {
           // const file = req.file;
           // var img = require("fs").readFileSync(file.path);
 
@@ -356,7 +360,7 @@ const sendCode = async (req, res) => {
       message: `SMS sent successfully to ${req.body.phone_no}`,
       data: verificationCheck,
     });
-  }  catch (error) {
+  } catch (error) {
     return res.status(400).json({
       message: `Failed to send texto to ${req.body.phone_no}`,
       data: error.message,
@@ -368,16 +372,16 @@ const sendCode = async (req, res) => {
  */
 const verifyCode = async (req, res) => {
   try {
-    const verificationCheck =  await client.verify.v2
-    .services(process.env.TWILIO_SERVICE_SID)
+    const verificationCheck = await client.verify.v2
+      .services(process.env.TWILIO_SERVICE_SID)
       .verificationChecks.create({
         to: req.body.phone_no,
-        code: req.body.code,
-      channel:"sms",
+        code: req.body.code, 
+        channel: "sms",
         amount: "",
         payee: "",
-      })
-  
+      });
+
     return res.status(200).json({
       message: "User verified",
       data: verificationCheck,
@@ -399,47 +403,46 @@ const loginUser = async (req, res) => {
       req.body.email,
       req.body.password
     );
-    const userWithEmail = await User.findOne({mail:req.body.email});
+    const userWithEmail = await User.findOne({ mail: req.body.email });
     const token = await user.generateWebToken();
-if(user){
-  return res.status(200).json({
-    message: "Logged in successfully",
-    data: {
-      user: user,
-      token: token,
-    },
-  });
-}
-if(userWithEmail) {
-   if(userWithEmail.login_type == "DEFAULT" ){
-    return res.status(400).json({
-      message: "Login attempt failed, you password is incorrect.",
-      data: {
-        user: user,
-        token: token,
-      },
-    });
-  
-  }
-  else if(userWithEmail.login_type != "DEFAULT" ){
-    return res.status(400).json({
-      message: "Login attempt failed, you registered with either a Facebook or Google Account.",
-      data: {
-        user: user,
-        token: token,
-      },
-    });
-  }
-}
-else{
-  return res.status(400).json({
-    message: "Login attempt failed, you might have registered with Facebook or Google account",
-    data: {
-      user: user,
-      token: token,
-    },
-  });
-}
+    if (user) {
+      return res.status(200).json({
+        message: "Logged in successfully",
+        data: {
+          user: user,
+          token: token,
+        },
+      });
+    }
+    if (userWithEmail) {
+      if (userWithEmail.login_type == "DEFAULT") {
+        return res.status(400).json({
+          message: "Login attempt failed, you password is incorrect.",
+          data: {
+            user: user,
+            token: token,
+          },
+        });
+      } else if (userWithEmail.login_type != "DEFAULT") {
+        return res.status(400).json({
+          message:
+            "Login attempt failed, you registered with either a Facebook or Google Account.",
+          data: {
+            user: user,
+            token: token,
+          },
+        });
+      }
+    } else {
+      return res.status(400).json({
+        message:
+          "Login attempt failed, you might have registered with Facebook or Google account",
+        data: {
+          user: user,
+          token: token,
+        },
+      });
+    }
   } catch (error) {
     return res.status(400).json({
       message: "Failed to login",

@@ -17,7 +17,8 @@ const {
   getAllFacilitators,
   deleteFacilitators,
   toggleFacilitatorStatus,
-  getFacilitatorInfo
+  getFacilitatorInfo,
+  updateFacilitator
 } = require("../controllers/facilitator");
 
 // Create facilitator
@@ -36,6 +37,8 @@ router.get("/facilitators", getAllFacilitators);
 //Get all facilitators
 router.get("/facilitator/info", getFacilitatorInfo);
 
+//Update facilitator
+router.patch("/facilitator", updateFacilitator);
 // //Get a specific user
 // router.get("/user", auth, getSpecificUser);
 

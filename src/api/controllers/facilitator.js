@@ -90,6 +90,41 @@ const registerNewFacilitator = async (req, res, next) => {
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
+const updateFacilitator = async (req, res, next) => {
+  try {
+
+
+    const isFacilitatorsListRetrieved = await Facilitator.findOne({
+      facilitator_id:req.body.facilitator_id}
+    );
+  
+    
+    
+    if (isFacilitatorsListRetrieved) {
+      for(var i in req.body){
+        isFacilitatorsListRetrieved.updateOne({});
+      }
+      await isFacilitatorsListRetrieved.save();
+      return res.status(202).json({
+        message: `Facilitator ${isFacilitatorsListRetrieved.name} updated`,
+        data: isFacilitatorsListRetrieved,
+      });
+    } else {
+      return res.status(204).json({
+        message: "Facilitator not found",
+        data: {},
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "An error occurred ",
+      data: error.message,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
 const getFacilitatorInfo = async (req, res, next) => {
   try {
 
@@ -198,4 +233,5 @@ module.exports = {
   deleteFacilitators,
   toggleFacilitatorStatus,
   getFacilitatorInfo,
+  updateFacilitator
 };

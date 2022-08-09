@@ -9,6 +9,7 @@ const courseRouter = require('../src/api/routes/course');
 const cartRouter = require('../src/api/routes/cart');
 const facilitatorRouter = require('../src/api/routes/facilitator');
 const searchRouter = require('../src/api/routes/search');
+const lessonRouter = require('../src/api/routes/lesson');
 
 const cors = require('cors');
 
@@ -26,6 +27,7 @@ app.use(cartRouter);
 app.use(courseRouter);
 app.use(searchRouter);
 app.use(facilitatorRouter);
+app.use(lessonRouter);
 
 
 

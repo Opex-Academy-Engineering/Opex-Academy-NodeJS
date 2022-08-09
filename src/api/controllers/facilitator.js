@@ -31,21 +31,7 @@ function padNumber(number) {
 const registerNewFacilitator = async (req, res, next) => {
   try {
     //
-    const firebaseApp = getApp();
-    const storage = getStorage(
-      firebaseApp,
-      "gs://opex-academy-mobile.appspot.com"
-    );
 
-    const file = req.file;
-    var img = require("fs").readFileSync(file.path);
-
-    const uid = uuidv4();
-    //
-    const imagesRef = ref(storage, `images/${uid}.jpg`);
-
-    await uploadBytes(imagesRef, img);
-    const profilePicurl = await getDownloadURL(imagesRef, img);
 
     const isEmailAvailable = await Facilitator.findOne({
       email: req.body.email,
@@ -53,7 +39,7 @@ const registerNewFacilitator = async (req, res, next) => {
 
     if (!isEmailAvailable) {
       const facilitator = new Facilitator({ ...req.body });
-      facilitator.profile_pic = profilePicurl;
+      facilitator.profile_pic = 'profilePicurl';
 
       const last = await Facilitator.find({});
 
@@ -91,19 +77,19 @@ const registerNewFacilitator = async (req, res, next) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const updateFacilitator = async (req, res, next) => {
-  try {
-
-
-    const isFacilitatorsListRetrieved = await Facilitator.findOne({
-      facilitator_id:req.body.facilitator_id}
-    );
   
-    
-    
+  try {
+    const isFacilitatorsListRetrieved = await Facilitator.findOneAndUpdate({facilitator_id:req.body.facilitator_id}, req.body, {upsert: true}, function(err, doc) {
+      if (err) 
+      return res.send(500, {error: err});
+
+         return res.status(202).json({
+        message: `Facilitator ${isFacilitatorsListRetrieved.name} updated`,
+        data: isFacilitatorsListRetrieved,
+      });
+  });
+
     if (isFacilitatorsListRetrieved) {
-      for(var i in req.body){
-        isFacilitatorsListRetrieved.updateOne({});
-      }
       await isFacilitatorsListRetrieved.save();
       return res.status(202).json({
         message: `Facilitator ${isFacilitatorsListRetrieved.name} updated`,

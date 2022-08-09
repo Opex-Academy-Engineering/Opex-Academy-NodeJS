@@ -1,23 +1,9 @@
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-const User = require("../../models/user");
-const Facilitator = require("../../models/facilitator");
 const OwnedCourse = require("../../models/ownedCourse");
 const Course = require("../../models/course");
-const authAdmin = require("../../api/middleware/authAdmin");
-const jwt = require("jsonwebtoken");
-const { v4: uuidv4 } = require('uuid');
-const fs = require("fs");
+const Lesson = require("../../models/lesson");
 
-const { getApp } = require("firebase/app");
-const {app} = require('../../configs/firebase')
-const {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} = require("firebase/storage");
-const { constants } = require("buffer");
+
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
@@ -25,82 +11,49 @@ const { constants } = require("buffer");
 //
 
 
-const createCourse = async (req, res) => {
-  try {
-    const file = req.files.course_header_image;
+const createLesson = async (req, res) => {
+  try {     
 
-    const uid = uuidv4();
-    const firebaseApp = getApp();
-    const storage = getStorage(
-      firebaseApp,
-      "gs://opex-academy-mobile.appspot.com"
-    );
-
-
-
-    //
-    const imagesRef = ref(storage, `images/${uid}`);
-
-    //  let byteArray =  fs.readFileSync(file[0].path);
- 
-    const trial = await uploadBytes(imagesRef, file[0]);
-   
-
-    const uploadedDataUrl = await getDownloadURL(imagesRef, img).then(result=>{
-      console.log(result)
-    });
     // const deleteData = fs.unlinkSync(filePath);
-    const facilitator = await Facilitator.findOne({
-      facilitator_id: req.body.facilitator_id,
+    const lesson = new Lesson({
+        lesson:req.body.lesson,
+        description:req.body.description,
+        course:req.body.course
     });
 
 
+ 
+ 
 
-    if (facilitator) {
-      const doesCourseExists = await Course.findOne({ title: req.body.title });
-      if (!doesCourseExists) {
-        const course = new Course({
-          title: req.body.title,
-          description: req.body.description,
-          course_header_image: "uploadedDataUrl",
-          facilitator: facilitator,
-        });
-
-        course.save();
-        //
+    if (lesson) {
+   
         return res.status(201).json({
-          messaage: "Course created successfully",
-          data: course,
+          messaage: "Lesson created successfully",
+          data: lesson,
         });
       } else {
         return res.status(400).json({
-          messaage: `Course with title: ${req.body.title}, already exists`,
+          messaage: `Lesson with title: ${req.body.lesson}, already exists`,
           data: {},
         });
       }
-    } else {
-      return res.status(400).json({
-        messaage: "Facilitator not found.",
-        data: {},
-      });
-    }
   } catch (ex) {
     return res
       .status(500)
-      .json({ message: "Failed to create course", data: ex.messaage });
+      .json({ message: "Failed to create lesson", data: ex.messaage });
   }
 };
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 
-const getAllCourses = async (req, res) => {
+const getAllLessons = async (req, res) => {
   const filter = {};
-  const allCourses = await Course.find(filter);
+  const allLessons = await Lesson.find(filter);
   try {
     return res.json({
       message: "Loaded successfully",
-      data: allCourses,
+      data: allLessons,
     });
   } catch (e) {
     return res.status(500).json({
@@ -287,8 +240,8 @@ const deleteCourse = async (req, res) => {
  */
 module.exports = {
   getPopularCourses,
-  createCourse,
-  getAllCourses,
+  createLesson,
+  getAllLessons,
   getAllFreeCourses,
   deleteCourse,
   comfirmPayAndAddCourseToUser,

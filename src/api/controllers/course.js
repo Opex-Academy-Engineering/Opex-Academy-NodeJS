@@ -9,6 +9,10 @@ const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
 const fs = require("fs");
 
+
+
+
+
 const { getApp } = require("firebase/app");
 const {app} = require('../../configs/firebase')
 const {
@@ -27,28 +31,12 @@ const { constants } = require("buffer");
 
 const createCourse = async (req, res) => {
   try {
-    const file = req.files.course_header_image;
+
+    const file = req.file;
 
     const uid = uuidv4();
-    const firebaseApp = getApp();
-    const storage = getStorage(
-      firebaseApp,
-      "gs://opex-academy-mobile.appspot.com"
-    );
-
-
-
-    //
-    const imagesRef = ref(storage, `images/${uid}`);
-
-    //  let byteArray =  fs.readFileSync(file[0].path);
- 
-    const trial = await uploadBytes(imagesRef, file[0]);
    
 
-    const uploadedDataUrl = await getDownloadURL(imagesRef, img).then(result=>{
-      console.log(result)
-    });
     // const deleteData = fs.unlinkSync(filePath);
     const facilitator = await Facilitator.findOne({
       facilitator_id: req.body.facilitator_id,
@@ -56,18 +44,27 @@ const createCourse = async (req, res) => {
 
 
 
-    if (facilitator) {
+// await s3.putObjet({Bucket: process.env.DO_SPACES_NAME, Key: "any_file_or_path_name.jpg", Body: file[0].path, ACL: "public"}, (err, data) => {
+// if (err) return console.log(err);
+// console.log("Your file has been uploaded successfully!", data);
+// });
+
+    if (facilitator && file) {
+
       const doesCourseExists = await Course.findOne({ title: req.body.title });
+      console.log(doesCourseExists)
+
       if (!doesCourseExists) {
         const course = new Course({
           title: req.body.title,
           description: req.body.description,
-          course_header_image: "uploadedDataUrl",
+          course_header_image: file.location,
           facilitator: facilitator,
         });
 
-        course.save();
+
         //
+        console.log('We here');
         return res.status(201).json({
           messaage: "Course created successfully",
           data: course,
@@ -87,7 +84,7 @@ const createCourse = async (req, res) => {
   } catch (ex) {
     return res
       .status(500)
-      .json({ message: "Failed to create course", data: ex.messaage });
+      .json({ message: "Failed to create course,ma", data: ex.messaage });
   }
 };
 /*

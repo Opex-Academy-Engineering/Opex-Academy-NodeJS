@@ -1,7 +1,8 @@
-const multer = require("multer");
+
 const OwnedCourse = require("../../models/ownedCourse");
 const Course = require("../../models/course");
 const Lesson = require("../../models/lesson");
+const { SyncListPermissionContext } = require("twilio/lib/rest/preview/sync/service/syncList/syncListPermission");
 
 
 /*
@@ -13,20 +14,28 @@ const Lesson = require("../../models/lesson");
 
 const createLesson = async (req, res) => {
   try {     
+    const course = await Course.findById(req.body.course_id);
+    console.log(`The course: ${course}`);
 
-    // const deleteData = fs.unlinkSync(filePath);
     const lesson = new Lesson({
         lesson:req.body.lesson,
         description:req.body.description,
         course:req.body.course
     });
+    console.log(`The lesson: ${lesson}`);
 
+
+    course.content.push(lesson);
+
+    console.log(`The course content: ${course.content}`)
+    await lesson.save();
+    await course.save();
 
  
  
 
-    if (lesson) {
-   
+    if (lesson && course) {
+ console.log('we in');
         return res.status(201).json({
           messaage: "Lesson created successfully",
           data: lesson,

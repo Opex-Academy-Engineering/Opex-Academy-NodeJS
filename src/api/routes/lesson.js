@@ -9,7 +9,7 @@ const {returnCoursesObject,createLesson,getAllLessons,getAllFreeCourses,getPopul
 require("dotenv").config();
 
 // Create a leson
-router.post('/lesson', createLesson);
+router.post('/lesson',authAdmin,createLesson);
 
 
 // get most-popular courses

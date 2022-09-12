@@ -1,5 +1,3 @@
-
-
 const express = require("express");
 const app = express();
 const config = require("../src/configs/index");
@@ -28,6 +26,8 @@ app.use(courseRouter);
 app.use(searchRouter);
 app.use(facilitatorRouter);
 app.use(lessonRouter);
+// Views in public directory
+app.use(express.static('public'));
 
 
 

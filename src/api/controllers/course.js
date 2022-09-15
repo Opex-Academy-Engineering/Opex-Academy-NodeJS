@@ -49,22 +49,20 @@ const createCourse = async (req, res) => {
 // console.log("Your file has been uploaded successfully!", data);
 // });
 
-    if (facilitator && file) {
+    if (facilitator) {
 
       const doesCourseExists = await Course.findOne({ title: req.body.title });
-      console.log(doesCourseExists)
+
 
       if (!doesCourseExists) {
         const course = new Course({
           title: req.body.title,
           description: req.body.description,
           course_header_image: file.location,
-          facilitator: facilitator,
+          facilitator: facilitator._id,
         });
 
-
-        //
-        console.log('We here');
+        await course.save()
         return res.status(201).json({
           messaage: "Course created successfully",
           data: course,
@@ -85,6 +83,61 @@ const createCourse = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Failed to create course,ma", data: ex.messaage });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
+const updateCourse = async (req, res) => {
+  try {
+
+    const file = req.files;
+
+
+   
+
+    // const deleteData = fs.unlinkSync(filePath);
+
+
+// await s3.putObjet({Bucket: process.env.DO_SPACES_NAME, Key: "any_file_or_path_name.jpg", Body: file[0].path, ACL: "public"}, (err, data) => {
+// if (err) return console.log(err);
+// console.log("Your file has been uploaded successfully!", data);
+// });
+
+
+
+      const doesCourseExists = await Course.findById( req.body.course_id );
+
+
+      if (doesCourseExists) {
+        for(const x in req.body){
+       
+       if(x === 'course_header_image')   doesCourseExists[x]=file.course_header_image[0].location
+       doesCourseExists[x]=req.body[x]
+      
+        }
+
+       await 
+        doesCourseExists.save()
+
+
+        //
+
+        return res.status(201).json({
+          messaage: "Course updated successfully",
+          data: doesCourseExists,
+        });
+      } else {
+        return res.status(400).json({
+          messaage: `Course with title: ${req.body.title}, doesn’t exist`,
+          data: {},
+        });
+      }
+  
+  } catch (ex) {
+    return res
+      .status(500)
+      .json({ message: "Failed to create course", data: ex.messaage });
   }
 };
 /*
@@ -291,5 +344,5 @@ module.exports = {
   comfirmPayAndAddCourseToUser,
   getUserActiveCourses,
   getAllBoughtCourses,
-  returnCoursesObject
+  returnCoursesObject,updateCourse
 };

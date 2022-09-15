@@ -38,6 +38,7 @@ const storage = getStorage(firebaseApp, "gs://opex-academy-mobile.appspot.com");
 const registerNewUser = async (req, res) => {
   try {
     const type = req.body.login_type;
+    const file = req.file;
 
     switch (type) {
       case userTypes.googleUser:
@@ -161,7 +162,7 @@ const registerNewUser = async (req, res) => {
           if (!isEmailAvailable) {
             const user = new User({
               email: req.body.email,
-              // profile_pic: uploadedDataUrl,
+              profile_pic: uploadedDataUrl,
               phone_no: req.body.phone_no,
               password: req.body.password,
               name: req.body.name,
@@ -212,7 +213,7 @@ const registerNewUser = async (req, res) => {
           if (!isEmailAvailable) {
             const user = new User({
               email: req.body.email,
-              // profile_pic: uploadedDataUrl,
+              profile_pic: file.location,
               phone_no: req.body.phone_no,
               password: req.body.password,
               name: req.body.name,
@@ -455,15 +456,16 @@ const loginUser = async (req, res) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const logoutUser = async (req, res) => {
-  try {
-    req.user.tokens = req.user.tokens.filter((tokenObj) => {
-      return tokenObj.token !== req.token;
-    });
-    await req.user.save();
 
+  try {
+    // req.user.tokens = req.user.tokens.filter((tokenObj) => {
+    //   return tokenObj.token !== req.token;
+    // });
+    req.user.tokens.pop();
+    await req.user.save();
     return res.status(200).json({
       message: "Logged out successfully!",
-      data: {},
+      data: req.user,
     });
   } catch (error) {
     return res.status(417).json({
@@ -478,7 +480,29 @@ const logoutUser = async (req, res) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const updateUser = async (req, res, next) => {
-  return res.status(200).send("Users");
+  try {
+    const user = await User.findById(req.user._id);
+
+    if(!user) { return res.status(400).json({
+      message: 'User not found',
+      data: user,
+    });
+  }
+
+ for(const key in req.body.update){
+user[key] = req.body.update[key];
+ }
+  await user.save();
+    return res.status(200).json({
+      message: "User information updated",
+      data: user,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: "Server error.",
+      data: e,
+    });
+  }
 };
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
@@ -501,7 +525,7 @@ const getKycInfo = async (req, res, next) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const toggleNotifications = async (req, res, next) => {
-  console.log("user");
+
   try {
     const user = await User.findById(req.user._id);
 

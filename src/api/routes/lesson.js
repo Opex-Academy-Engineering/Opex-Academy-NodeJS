@@ -3,13 +3,13 @@ const authAdmin = require('../middleware/authAdmin')
 const auth = require('../middleware/auth')
 const router = new express.Router()
 const {returnCoursesObject,createLesson,getAllLessons,getAllFreeCourses,getPopularCourses,deleteCourse,comfirmPayAndAddCourseToUser,getUserActiveCourses,getAllBoughtCourses} = require('../controllers/lesson')
+const upload = require('../utils/upload');
 
 
 
-require("dotenv").config();
 
 // Create a leson
-router.post('/lesson',authAdmin,createLesson);
+router.post('/lesson',upload.fields([{name:'thumbnail',maxCount:1},{name:'media_upload',maxCount:1}]),createLesson);
 
 
 // get most-popular courses

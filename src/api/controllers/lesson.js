@@ -2,7 +2,7 @@
 const OwnedCourse = require("../../models/ownedCourse");
 const Course = require("../../models/course");
 const Lesson = require("../../models/lesson");
-const { SyncListPermissionContext } = require("twilio/lib/rest/preview/sync/service/syncList/syncListPermission");
+
 
 
 /*
@@ -13,43 +13,44 @@ const { SyncListPermissionContext } = require("twilio/lib/rest/preview/sync/serv
 
 
 const createLesson = async (req, res) => {
-  try {     
+  try {        
+    
     const course = await Course.findById(req.body.course_id);
+
     console.log(`The course: ${course}`);
 
+
     const lesson = new Lesson({
-        lesson:req.body.lesson,
+        title:req.body.title,
         description:req.body.description,
-        course:req.body.course
-    });
+        course_id:req.body.course_id,
+        thumbnail:req.files.thumbnail[0].location,
+        media_upload:req.files.media_upload[0].location,
+    })
     console.log(`The lesson: ${lesson}`);
 
 
     course.content.push(lesson);
 
-    console.log(`The course content: ${course.content}`)
+
     await lesson.save();
+    console.log(`The course content: ${course.content}`)
     await course.save();
 
  
  
 
-    if (lesson && course) {
+
  console.log('we in');
-        return res.status(201).json({
-          messaage: "Lesson created successfully",
+        return res.status(200).json({
+          messaage: "Lesson added successfully",
           data: lesson,
         });
-      } else {
-        return res.status(400).json({
-          messaage: `Lesson with title: ${req.body.lesson}, already exists`,
-          data: {},
-        });
-      }
+      
   } catch (ex) {
     return res
       .status(500)
-      .json({ message: "Failed to create lesson", data: ex.messaage });
+      .json({ message: "Failed to add lesson", data: ex.messaage });
   }
 };
 /*

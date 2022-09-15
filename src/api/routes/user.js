@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 
 const multer  = require('multer')
 const storage = multer.memoryStorage();
-const upload = multer({preservePath:true,limits:2,storage: storage});
+const upload = require('../utils/upload')
 
 const {
   registerNewUser,
@@ -20,7 +20,7 @@ const {
   verifyCode,
   sendCode,
   registerOrLoginWithGoogle,
-  checkTokenValidity
+  checkTokenValidity,updateUser
 } = require("../controllers/user");
 
 
@@ -33,6 +33,9 @@ router.post("/user/token-validity",auth,checkTokenValidity);
 
 // send code
 router.post("/user/send-code", sendCode);
+
+// Update user info
+router.patch("/user", auth ,updateUser);
 
 // Verify code
 router.post("/user/verify", verifyCode);

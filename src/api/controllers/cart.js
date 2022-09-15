@@ -9,6 +9,7 @@ const Cart = require("../../models/cart");
 
 
 var bodyParser = require("body-parser");
+const e = require("express");
 var jsonParser = bodyParser.json();
 
 /*
@@ -16,37 +17,36 @@ var jsonParser = bodyParser.json();
  */
 const addToCart = async (req, res) => {
   try {
-    // const verify = jwt.verify(
-    //   req.token,
-    //   process.env.ACCESS_TOKEN_SECRET,
-    //   function (err, decoded) {
-    //     if (err) {
-    //       return res
-    //         .status(400)
-    //         .json({ message: "Failed to add course to cart", data: err });
-    //     }
-    //   }
-    // );
+
     const user = req.user;
 
-    const course = await Course.findById(req.body.course_id);
+    const course = await Course.findById(req.body.course_id)
 
-    const cart = await Cart.findOne({ owner: req.user._id });
-    if (cart.items.includes(course._id)) {
-      res.status(200).json({
+    const cart = await Cart.findOne({ owner: req.user._id }).populate('items');
+
+   if(course){ 
+    for(var i in cart.items)
+    console.log(cart.items[i]._id)
+    if (cart.items[i]._id===course._id) {
+      return res.status(200).json({
         messaage: "The Course is already in the cart.",
         data: cart,
       });
     } else {
       cart.items.push(course);
 
-      cart.save();
+      await cart.save();
     }
 
     return res.status(200).json({
       messaage: "Course added successfully to cart.",
       data: cart,
-    });
+    });}else{
+      return res.status(400).json({
+        messaage: "The Course was not found.",
+        data: cart,
+      });
+    }
   } catch (e) {
     return res
       .status(400)
@@ -59,7 +59,7 @@ const addToCart = async (req, res) => {
 
 const retreiveUserCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ owner: req.user._id });
+    const cart = await Cart.findOne({ owner: req.user._id }).populate('items');
 
     if (cart) {
       return res.status(200).json({
@@ -89,12 +89,16 @@ const removeItemFromCart = async (req, res) => {
 
     var cart = await Cart.findOne({
       owner: req.user._id,
-    });
-    for (let i = 0; i < itemsToDelete.length; i++) {
-      if (cart.items.includes(itemsToDelete[i])) {
-        const indexOfObject = cart.items.indexOf(itemsToDelete[i]);
+    }).populate('items');
+    for (var x in itemsToDelete)  {
+      for (var i in cart.items) 
+      if (cart.items[i]._id === itemsToDelete[x]) 
+      console.log(i)
+      console.log(cart.items[i])
+
+        var indexOfObject = cart.items.indexOf(itemsToDelete[x]);
         cart.items.splice(indexOfObject, 1);
-      }
+    
     }
     await cart.save();
     return res.status(200).json({

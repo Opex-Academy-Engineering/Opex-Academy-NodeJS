@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 var bodyParser = require("body-parser");
 const multer  = require('multer')
-const upload = multer({ dest: 'uploads/' })
+const upload = require('../utils/upload')
 
-const auth = require("../middleware/auth");
+const authAdmin = require("../middleware/authAdmin");
 
 const accountSid = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // Your Account SID from www.twilio.com/console
 const authToken = 'your_auth_token'; // Your Auth Token from www.twilio.com/console
@@ -26,7 +26,7 @@ router.post("/facilitator/register",upload.single("profile_pic") ,registerNewFac
 
 
 //Toggle Facilitator activity status
-router.post("/facilitator", auth, toggleFacilitatorStatus);
+router.post("/facilitator", authAdmin, toggleFacilitatorStatus);
 
 // //User kyc setting
 // router.get("/user/kyc", auth, getKycInfo);
@@ -46,6 +46,6 @@ router.patch("/facilitator", updateFacilitator);
 // router.patch("/user/change-password", auth, changePassword);
 
 //Delete facilitator
-router.delete("/facilitator", auth, deleteFacilitators);
+router.delete("/facilitator", authAdmin, deleteFacilitators);
 
 module.exports = router;

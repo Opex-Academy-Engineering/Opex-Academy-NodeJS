@@ -33,7 +33,7 @@ const courseSchema = new mongoose.Schema(
       default: "",
     },
     facilitator: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.ObjectId,
       required: true,
       ref: "Facilitator",
     },

@@ -13,17 +13,17 @@ const authAdmin = async (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin','*');
     res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
     res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
-    console.log('we')
+
     if (!user) {
       throw new Error("User not found");
     }
 
     req.user = user;
     req.token = token;
-    if (powers[user.role] >= 1) { 
+    if (powers[user.role] > 1) { 
       next();
     }else{
-        res.status(403).json({
+        return res.status(403).json({
             "message":"Access denied",
             data:{}
         })

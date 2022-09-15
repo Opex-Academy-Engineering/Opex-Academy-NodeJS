@@ -5,13 +5,7 @@ const Facilitator = require("../../models/facilitator");
 const { getApp } = require("firebase/app");
 //Leave this unused import
 //it initializes the firebase app
-const { app } = require("../../configs/firebase");
-const {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} = require("firebase/storage");
+
 
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
@@ -39,7 +33,7 @@ const registerNewFacilitator = async (req, res, next) => {
 
     if (!isEmailAvailable) {
       const facilitator = new Facilitator({ ...req.body });
-      facilitator.profile_pic = 'profilePicurl';
+      facilitator.profile_pic = req.file.location;
 
       const last = await Facilitator.find({});
 
@@ -191,7 +185,10 @@ const deleteFacilitators = async (req, res, next) => {
     const facilitator = await Facilitator.findOneAndDelete({
       facilitator_id: req.body.facilitator_id,
     });
+    console.log (req.user)
+  
     if (facilitator) {
+
       return res.status(200).json({
         message: "Facilitator deleted successfully",
         data: facilitator,
@@ -205,7 +202,7 @@ const deleteFacilitators = async (req, res, next) => {
   } catch (e) {
     return res.status(400).json({
       message: "Failed",
-      data: last,
+      data: e.message       
     });
   }
 };

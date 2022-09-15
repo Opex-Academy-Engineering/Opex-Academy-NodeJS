@@ -58,7 +58,9 @@ const createLesson = async (req, res) => {
  */
 
 const getAllLessons = async (req, res) => {
-  const filter = {};
+  var filter = {};
+  console.log()
+  if(req.params.course_id) filter = {course_id:req.query.course_id}
   const allLessons = await Lesson.find(filter);
   try {
     return res.json({

@@ -9,8 +9,8 @@ const upload = require('../utils/upload');
 
 
 // Create a leson
-router.post('/lesson',upload.fields([{name:'thumbnail',maxCount:1},{name:'media_upload',maxCount:1}]),createLesson);
-
+const cpUpload =upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'media_upload', maxCount: 1 }])
+router.post('/lesson',cpUpload,createLesson);
 
 // get most-popular courses
 router.get('/courses/most-popular', auth, getPopularCourses);

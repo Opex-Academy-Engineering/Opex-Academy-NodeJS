@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    courses:[{type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     email: {
       type: String,
       required: true,

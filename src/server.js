@@ -8,6 +8,7 @@ const cartRouter = require('../src/api/routes/cart');
 const facilitatorRouter = require('../src/api/routes/facilitator');
 const searchRouter = require('../src/api/routes/search');
 const lessonRouter = require('../src/api/routes/lesson');
+const purchasesRouter = require('../src/api/routes/purchases');
 
 const cors = require('cors');
 
@@ -26,6 +27,7 @@ app.use(courseRouter);
 app.use(searchRouter);
 app.use(facilitatorRouter);
 app.use(lessonRouter);
+app.use(purchasesRouter);
 // Views in public directory
 app.use(express.static('public'));
 

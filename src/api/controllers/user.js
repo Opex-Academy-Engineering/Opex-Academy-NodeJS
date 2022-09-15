@@ -576,6 +576,30 @@ const changePassword = async (req, res, next) => {
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
+const getUserCourses = async (req, res, next) => {
+  try {
+    const users = req.user;
+    if (users) {
+      res.status(200).json({
+        message: "All Users from the database.",
+        data: users,
+      });
+    } else {
+      res.status(204).json({
+        message: "No content",
+        data: error.message,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      data: error.message,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
 const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
@@ -588,6 +612,34 @@ const getAllUsers = async (req, res, next) => {
       res.status(204).json({
         message: "No content",
         data: error.message,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      data: error.message,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
+const verifyAndAddcourseToUser = async (req, res, next) => {
+  try {
+   const coursesToAdd = req.body.courses;
+   const reference = req.body.reference
+   const user = req.user;
+   user.courses.in
+    var isReferencevalid = true;
+    if (isReferencevalid) {
+      res.status(200).json({
+        message: "Verification code sent successfully",
+        data: users,
+      });
+    } else {
+      res.status(204).json({
+        message: "The transaction failed try again later or contact customer care.",
+        data: {},
       });
     }
   } catch (error) {
@@ -653,4 +705,5 @@ module.exports = {
   sendCode,
   registerOrLoginWithGoogle,
   checkTokenValidity,
+  getUserCourses,verifyAndAddcourseToUser
 };

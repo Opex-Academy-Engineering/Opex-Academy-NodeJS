@@ -19,8 +19,10 @@ const {
   getSpecificUser,
   verifyCode,
   sendCode,
+  getUserCourses,
   registerOrLoginWithGoogle,
-  checkTokenValidity,updateUser
+  checkTokenValidity,updateUser,
+  verifyAndAddcourseToUser
 } = require("../controllers/user");
 
 
@@ -33,6 +35,9 @@ router.post("/user/token-validity",auth,checkTokenValidity);
 
 // send code
 router.post("/user/send-code", sendCode);
+
+// send code
+router.get("/user/courses", auth,getUserCourses);
 
 // Update user info
 router.patch("/user", auth ,updateUser);
@@ -61,4 +66,6 @@ router.patch("/user/change-password", auth, changePassword);
 //Logout user
 router.delete("/user/logout", auth, logoutUser);
 
+//After successfulk payment
+router.post("/user/pay", auth, verifyAndAddcourseToUser);
 module.exports = router;

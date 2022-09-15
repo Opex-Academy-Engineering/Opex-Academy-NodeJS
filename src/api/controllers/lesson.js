@@ -58,10 +58,11 @@ const createLesson = async (req, res) => {
  */
 
 const getAllLessons = async (req, res) => {
-  var filter = {};
-  console.log(req.query.course_id)
+  let filter = {};
 
-  const allLessons = await Lesson.findOne({course_id:req.query.course_id});
+  if(req.query.course_id) filter = {course_id:req.query.course_id}
+  console.log(filter)
+  const allLessons = await Lesson.find(filter);
   try {
     return res.json({
       message: "Loaded successfully",

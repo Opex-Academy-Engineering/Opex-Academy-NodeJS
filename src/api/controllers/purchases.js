@@ -18,7 +18,7 @@ purchase.save();
 const getPurchases = async (req, res) => {
   try {
     confirmPurchase();
-    const ownedCourse = await OwnedCourse.find({})     ;
+    const ownedCourse = await OwnedCourse.find({}).populate(['course','owner'])     ;
    
     return res.status(200).json({
       message: "All purchased courses",

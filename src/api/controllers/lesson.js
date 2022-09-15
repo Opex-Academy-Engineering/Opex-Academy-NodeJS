@@ -230,17 +230,23 @@ const getAllBoughtCourses = async (req, res) => {
  */
 const deleteCourse = async (req, res) => {
   try {
-    const itemToDelete = req.body.course_id;
+    const itemToDelete = req.body.lesson_id;
 
-    var course = await Course.findOneAndDelete({
+    var lesson = await Lesson.findOneAndDelete({
       _id: itemToDelete,
-    }).populate("facilitator");
-
-    await course.save();
-    return res.status(200).json({
-      message: "Course(s) removed.",
-      data: cart,
     });
+
+if(lesson){
+  return res.status(200).json({
+    message: "Lesson(s) removed.",
+    data: {},
+  });    
+}else{
+  return res.status(400).json({
+    message: "Lessons not found :/.",
+    data: {},
+  });
+}
   } catch (e) {
     return res.status(500).json({
       message: "Server error.",

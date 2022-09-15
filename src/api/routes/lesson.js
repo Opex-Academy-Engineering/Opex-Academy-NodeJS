@@ -28,7 +28,7 @@ router.get('/course/active', auth, getUserActiveCourses);
 router.get('/course/owned-courses', authAdmin, getAllBoughtCourses);
  
 //delete a course
-router.delete('/course', authAdmin, deleteCourse);
+router.delete('/lesson', authAdmin, deleteCourse);
 
 //when a user buys a course 
 router.put('/course',auth, comfirmPayAndAddCourseToUser);

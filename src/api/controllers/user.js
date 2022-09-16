@@ -352,6 +352,7 @@ const sendCode = async (req, res) => {
       .services(process.env.TWILIO_SERVICE_SID)
       .verifications.create({
         to: req.body.phone_no,
+        code: req.body.code, 
         channel: "sms",
         amount: "",
         payee: "",
@@ -384,12 +385,12 @@ const verifyCode = async (req, res) => {
       });
 
     return res.status(200).json({
-      message: "User verified",
+      message: `SMS sent successfully to ${req.body.phone_no}`,
       data: verificationCheck,
     });
   } catch (error) {
     return res.status(400).json({
-      message: "Failed to verify user",
+      message: `Failed to send texto to ${req.body.phone_no}`,
       data: error.message,
     });
   }

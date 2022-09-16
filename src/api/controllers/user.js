@@ -78,9 +78,11 @@ const registerNewUser = async (req, res) => {
             return res.status(202).json({
               message:
                 "A User with this email already exist. Here use this web token instead",
-              data: isEmailAvailable
+              data: {
+                user: isEmailAvailable,
+                token: webToken,
                 
-                ,
+              },
             });
           } else {
             return res.status(400).json({

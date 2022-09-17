@@ -81,7 +81,7 @@ const registerNewUser = async (req, res) => {
               data: {
                 user: isEmailAvailable,
                 token: webToken,
-                
+
               },
             });
           } else {
@@ -406,7 +406,7 @@ const loginUser = async (req, res) => {
       req.body.email,
       req.body.password
     );
-    const userWithEmail = await User.findOne({ mail: req.body.email });
+await user.populate('kyc')
     const token = await user.generateWebToken();
     if (user) {
       return res.status(200).json({
@@ -417,10 +417,10 @@ const loginUser = async (req, res) => {
         },
       });
     }
-    if (userWithEmail) {
+    if (user) {
       if (userWithEmail.login_type == "DEFAULT") {
         return res.status(400).json({
-          message: "Login attempt failed, you password is incorrect.",
+          message: "Login attempt failed, your password is incorrect.",
           data: {
             user: user,
             token: token,

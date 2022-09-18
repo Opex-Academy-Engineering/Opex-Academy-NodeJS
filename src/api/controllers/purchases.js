@@ -5,14 +5,21 @@ const OwnedCourse = require('../../models/ownedCourse')
 const confirmPurchase= async (req,res)=>{
     try {
         const purchase = new OwnedCourse   ({
-course: '6323319cceec8bdf07c40591',
-owner:'62b1a5766d59afcc00b50362',
+          course: req.body.course,
+           owner:req.user._id
     });
 
 purchase.save();
+return res.status(201).json({
+  message: "Course added to user",
+  data: purchase,
+});
 
       }catch (ex){
-
+        return res.status(500).json({
+          message: "Server error",
+          data: ex.message,
+        });
       }
 }
 const getPurchases = async (req, res) => {
@@ -34,4 +41,4 @@ const getPurchases = async (req, res) => {
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
-module.exports = { getPurchases }
+module.exports = { getPurchases ,confirmPurchase}

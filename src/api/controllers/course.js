@@ -253,11 +253,12 @@ const getAllFreeCourses = async (req, res) => {
  */
 const getUserActiveCourses = async (req, res) => {
   try {
+
     const courses = await OwnedCourse.find({ owner: req.user._id }).populate(
-      "facilitator"
-    );
+      ["course"]);
+
     return res.status(200).json({
-      message: `All of ${req.user.name} Courses list`,
+      message: `All of ${req.user.name} active courses`,
       data: courses,
     });
   } catch (e) {

@@ -74,8 +74,15 @@ const registerNewUser = async (req, res) => {
               },
             });
           } else if (isEmailAvailable.login_type == "GOOGLE") {
+            var courses = []
             await isEmailAvailable.populate("kyc");
             const webToken = await isEmailAvailable.generateWebToken();
+            const allUserCourses = await OwnedCourse.find({owner:user._id})
+            for(var x in allUserCourses){
+              courses.push(allUserCourses[x].courses);
+            } 
+            user.courses =courses;
+            console.log(`the ${courses}`);
 
             return res.status(202).json({
               message:
@@ -127,8 +134,15 @@ const registerNewUser = async (req, res) => {
             });
           } else if (isEmailAvailable.login_type == "FACEBOOK") {
             isEmailAvailable.populate("kyc");
+            var courses = []
             const webToken = await isEmailAvailable.generateWebToken();
-
+            const allUserCourses = await OwnedCourse.find({owner:user._id})
+            for(var x in allUserCourses){
+              courses.push(allUserCourses[x].courses);
+            } 
+            isEmailAvailable.courses =courses;
+            isEmailAvailable.save()
+            console.log(`the ${courses}`);
             return res.status(202).json({
               message:
                 "A User with this email already exist. Here use this web token instead",
@@ -403,7 +417,7 @@ const verifyCode = async (req, res) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const loginUser = async (req, res) => {
-  var courses = []
+var courses = []
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -411,7 +425,7 @@ const loginUser = async (req, res) => {
     );
     const allUserCourses = await OwnedCourse.find({owner:user._id})
 for(var x in allUserCourses){
-  courses.push(allUserCourses[x].course);
+  courses.push(allUserCourses[x].courses);
 } 
 user.courses =courses;
 console.log(`the ${courses}`);

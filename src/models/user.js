@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: false,
-      default: "XXXXXXXX",
+      default: process.env.ACCESS_TOKEN_SECRET,
       validate(value) {
         if (value.toLowerCase().includes("password")) {
           throw new Error("Password can't be your password.");

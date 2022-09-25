@@ -77,7 +77,7 @@ const registerNewUser = async (req, res) => {
             var courses = []
             await isEmailAvailable.populate("kyc");
             const webToken = await isEmailAvailable.generateWebToken();
-            const allUserCourses = await OwnedCourse.find({owner:user._id})
+            const allUserCourses = await OwnedCourse.find({owner:isEmailAvailable._id})
             for(var x in allUserCourses){
               courses.push(allUserCourses[x].courses);
             } 
@@ -136,7 +136,7 @@ const registerNewUser = async (req, res) => {
             isEmailAvailable.populate("kyc");
             var courses = []
             const webToken = await isEmailAvailable.generateWebToken();
-            const allUserCourses = await OwnedCourse.find({owner:user._id})
+            const allUserCourses = await OwnedCourse.find({owner:isEmailAvailable._id})
             for(var x in allUserCourses){
               courses.push(allUserCourses[x].courses);
             } 

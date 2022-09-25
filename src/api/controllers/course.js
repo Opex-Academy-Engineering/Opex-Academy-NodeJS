@@ -63,6 +63,8 @@ const createCourse = async (req, res) => {
         });
 
         await course.save()
+         facilitator.courses_facilitated.push(course);
+         await facilitator.save();
         return res.status(201).json({
           messaage: "Course created successfully",
           data: course,
@@ -199,25 +201,17 @@ const comfirmPayAndAddCourseToUser = async (req, res) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const getPopularCourses = async (req, res) => {
-  const course = await Course.find({ price: "free" });
+  const course = await Course.find({});
   var coursesStudentCount = {};
   //Get all the courses
-  const allExistingCourses = await Course.find({});
-  //Add every new Id to a list 
-  if(allExistingCourses){
-    for(var x in allExistingCourses){
-      var count = await OwnedCourse.find({course: allExistingCourses[x]});
+  const allExistingCourses = await Course.find({}).sort({'count':-1});
+  //
 
-if(count){
-  coursesStudentCount[ allExistingCourses[x]._id] = count.length;
-}
-    }
-  }
 
   try {
     return res.status(200).json({
-      message: "Free Courses list",
-      data: coursesStudentCount,
+      message: "Popular]]] Courses list",
+      data: allExistingCourses,
     });
   } catch (e) {
     return res.status(500).json({

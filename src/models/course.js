@@ -32,6 +32,10 @@ const courseSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    count: {
+      type: Number,
+      default: 0,
+    },
     facilitator: {
       type: mongoose.Schema.ObjectId,
       required: true,

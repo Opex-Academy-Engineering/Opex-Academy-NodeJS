@@ -59,7 +59,7 @@ const addToCart = async (req, res) => {
 
 const retreiveUserCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ owner: req.user._id }).populate('items');
+    const cart = await Cart.findOne({ owner: req.user._id }).populate('items')
 
     if (cart) {
       return res.status(200).json({

@@ -81,8 +81,8 @@ const registerNewUser = async (req, res) => {
             for(var x in allUserCourses){
               courses.push(allUserCourses[x].courses);
             } 
-            user.courses =courses;
-            console.log(`the ${courses}`);
+            isEmailAvailable.courses =courses;
+            isEmailAvailable.save()
 
             return res.status(202).json({
               message:

@@ -23,6 +23,8 @@ const {
 } = require("firebase/storage");
 const { constants } = require("buffer");
 const userTypes = require("../../constants/userTypes");
+const Course = require("../../models/course");
+const OwnedCourse = require("../../models/ownedCourse");
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -401,12 +403,20 @@ const verifyCode = async (req, res) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 const loginUser = async (req, res) => {
+  var courses = []
   try {
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
     );
-await user.populate('kyc')
+    const allUserCourses = await OwnedCourse.find({owner:user._id})
+for(var x in allUserCourses){
+  courses.push(allUserCourses[x].course);
+} 
+user.courses =courses;
+console.log(`the ${courses}`);
+await user.populate(['kyc','courses'])
+await user.save();
     const token = await user.generateWebToken();
     if (user) {
       return res.status(200).json({

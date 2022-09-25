@@ -49,12 +49,7 @@ default:"0000",
       default: "",
     },
 
-    content: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Subject",
-      },
-    ],
+ 
   },
   {
     timestamps: true,

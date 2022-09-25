@@ -204,13 +204,13 @@ const getPopularCourses = async (req, res) => {
   const course = await Course.find({});
   var coursesStudentCount = {};
   //Get all the courses
-  const allExistingCourses = await Course.find({}).sort({'count':-1});
+  const allExistingCourses = await Course.find({}).sort({'count':-1}).limit(10);
   //
 
 
   try {
     return res.status(200).json({
-      message: "Popular]]] Courses list",
+      message: "Popular Courses list",
       data: allExistingCourses,
     });
   } catch (e) {

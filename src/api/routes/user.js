@@ -28,7 +28,7 @@ const {
 
 
 // Create user
-router.post("/user/register",upload.single('profile_pic'),registerNewUser);
+router.post("/user/register",registerNewUser);
 
 //Check token validity
 router.post("/user/token-validity",auth,checkTokenValidity);

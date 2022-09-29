@@ -75,18 +75,18 @@ const registerNewUser = async (req, res) => {
             });
           } else if (isEmailAvailable.login_type == "GOOGLE") {
             var courses = []
-            await isEmailAvailable.populate("kyc");
+            await isEmailAvailable.populate(['kyc','courses']);
             const webToken = await isEmailAvailable.generateWebToken();
             const allUserCourses = await OwnedCourse.find({owner:isEmailAvailable._id})
             for(var x in allUserCourses){
               courses.push(allUserCourses[x].courses);
             } 
-            isEmailAvailable.courses =courses;
-            isEmailAvailable.save()
+            isEmailAvailable.courses = courses;
+            await isEmailAvailable.save()
 
             return res.status(202).json({
               message:
-                "A User with this email already exist. Here use this web token instead",
+                "A User with this email already exist. Here, use this web token instead",
               data: {
                 user: isEmailAvailable,
                 token: webToken,
@@ -345,12 +345,14 @@ const checkTokenValidity = async (req, res) => {
  */
 const getSpecificUser = async (req, res) => {
   try {
-    const user = await User.findById(req.query.user_id);
 
+    const token = await req.user.generateWebToken();
+    await req.user.populate(['kyc','courses'])
     return res.status(200).json({
-      message: `${user.name}'s profile`,
+      message: `${req.user.name}'s profile`,
       data: {
-        user: user,
+        user: req.user,
+        token:token
       },
     });
   } catch (error) {

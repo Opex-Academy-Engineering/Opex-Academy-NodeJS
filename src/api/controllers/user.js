@@ -230,7 +230,7 @@ const registerNewUser = async (req, res) => {
           if (!isEmailAvailable) {
             const user = new User({
               email: req.body.email,
-              profile_pic: file.location,
+ 
               phone_no: req.body.phone_no,
               password: req.body.password,
               name: req.body.name,

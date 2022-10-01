@@ -8,7 +8,14 @@ const confirmPurchase= async (req,res)=>{
     try {
       doesCourseExist = await Course.findById(req.body.course);
 
-if(doesCourseExist){
+      const allUserCourses = await OwnedCourse.find({owner:req.user._id})
+      for(var x in allUserCourses){
+        req.user.courses.push(allUserCourses[x].course);
+      } 
+console.log(req.user.courses.includes(doesCourseExist._id))
+const state = req.user.courses.includes(doesCourseExist._id)
+if(doesCourseExist && state != true){
+
   const purchase = new OwnedCourse   ({
     course: req.body.course,
      owner:req.user._id
@@ -23,7 +30,7 @@ return res.status(201).json({
 });
 }else{
   return res.status(400).json({
-    message: "Course doesn't exist",
+    message: "Course doesn't exist or it's already in your courses",
     data: purchase,
   });
 }

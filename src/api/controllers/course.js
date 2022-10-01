@@ -60,6 +60,7 @@ const createCourse = async (req, res) => {
           description: req.body.description,
           course_header_image: file.location,
           facilitator: facilitator._id,
+          price: req.body.price ?? ""
         });
 
         await course.save()
@@ -140,6 +141,34 @@ const updateCourse = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Failed to create course", data: ex.messaage });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
+
+const rateCourse = async (req, res) => {
+
+
+  try {
+    const filter = {course:req.body.course_id,owner:req.user._id};
+    const course = await OwnedCourse.findOne(filter);
+  if(req.body.comment ){
+    course.comment =  req.body.comment 
+  }
+    if( req.body.rating ){
+      course.rating = req.body.rating 
+    }
+    await course.save();
+    return res.json({
+      message: "Loaded successfully",
+      data: course,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: "Failed to load the list",
+      data: e.messaage,
+    });
   }
 };
 /*
@@ -289,6 +318,36 @@ const returnCoursesObject = async (req, res) => {
 /*
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
+const getCoursesByName = async (req, res) => {
+
+
+
+  var search_key = req.query.search_key
+ 
+
+
+  const docs = await Course.find({ rank: { $regex: search_key } });
+
+
+
+//const wow = await Course.find( { 'title' : { '$regex' : req.query.search_ke, '$options' : 'i' } } )
+  // const returnVal = await Course.find({title:req.query.search_key})
+  try {
+   
+    return res.status(200).json({
+      message: "All bought Courses list",
+      data: docs,
+    })
+  } catch (e) {
+    return res.status(500).json({
+      message: "Failed to find courses",
+      data: e.messaage,
+    });
+  }
+};
+/*
+ *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
+ */
 const getAllBoughtCourses = async (req, res) => {
   try {
     const courses = await OwnedCourse.find({});
@@ -337,7 +396,7 @@ module.exports = {
   getAllFreeCourses,
   deleteCourse,
   comfirmPayAndAddCourseToUser,
-  getUserActiveCourses,
-  getAllBoughtCourses,
+  getUserActiveCourses,rateCourse,
+  getAllBoughtCourses,getCoursesByName,
   returnCoursesObject,updateCourse
 };

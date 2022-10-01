@@ -427,7 +427,7 @@ var courses = []
     );
     const allUserCourses = await OwnedCourse.find({owner:user._id})
 for(var x in allUserCourses){
-  courses.push(allUserCourses[x].courses);
+  courses.push(allUserCourses[x].course);
 } 
 user.courses =courses;
 console.log(`the ${courses}`);

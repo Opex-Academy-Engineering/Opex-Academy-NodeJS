@@ -8,7 +8,7 @@ const upload = require('../utils/upload')
 
 
 
-const {returnCoursesObject,updateCourse,createCourse,getAllCourses,getAllFreeCourses,getPopularCourses,deleteCourse,comfirmPayAndAddCourseToUser,getUserActiveCourses,getAllBoughtCourses} = require('../controllers/course')
+const {getCoursesByName,rateCourse,returnCoursesObject,updateCourse,createCourse,getAllCourses,getAllFreeCourses,getPopularCourses,deleteCourse,comfirmPayAndAddCourseToUser,getUserActiveCourses,getAllBoughtCourses} = require('../controllers/course')
 
 // const upload = multer({ dest: './public/data/uploads/' })
 // Set S3 endpoint to DigitalOcean Spaces
@@ -18,12 +18,18 @@ const {returnCoursesObject,updateCourse,createCourse,getAllCourses,getAllFreeCou
 // const cpUpload = upload.fields([{ name: 'course_header_image', maxCount: 1 }, { name: 'media_upload', maxCount: 49,minCount:0 }])
 router.post('/course', upload.single( 'course_header_image'), createCourse);
 
+// const cpUpload = upload.fields([{ name: 'course_header_image', maxCount: 1 }, { name: 'media_upload', maxCount: 49,minCount:0 }])
+router.post('/course/rate', auth, rateCourse);
+
 //
 router.patch('/course', upload.fields( [{name:'course_header_image',maxCount: 1},{name:'media_upload'}]), updateCourse);
 
 
 //return course information
 router.get('/course/info', auth, returnCoursesObject);
+
+//return course information
+router.get('/find/course', auth, getCoursesByName);
 
 // get most-popular courses
 router.get('/courses/most-popular', auth, getPopularCourses);

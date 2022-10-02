@@ -256,6 +256,7 @@ const getPopularCourses = async (req, res) => {
 
 const getAllFreeCourses = async (req, res) => {
   try {
+    
     const courses = await Course.find({ price: "free" }).populate(
       "facilitator"
     );

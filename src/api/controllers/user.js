@@ -509,7 +509,7 @@ const logoutUser = async (req, res) => {
  */
 const updateUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).populate(['kyc','courses',]);
 
     if(!user) { return res.status(400).json({
       message: 'User not found',
@@ -518,9 +518,10 @@ const updateUser = async (req, res, next) => {
   }
 
  for(const key in req.body.update){
-user[key] = req.body.update[key];
+user.kyc[key] = req.body.update[key];
  }
   await user.save();
+  await user.kyc.save();
     return res.status(200).json({
       message: "User information updated",
       data: user,

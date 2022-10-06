@@ -2,15 +2,14 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../../models/user");
-const Course = require("../../models/course");
+
 
 const auth = require("../middleware/auth");
-<<<<<<< Updated upstream
+
 const Cart = require("../../models/cart");
-=======
-const Cart = require('../../models/cart')
+
 const Course = require('../../models/course')
->>>>>>> Stashed changes
+
 
 
 var bodyParser = require("body-parser");

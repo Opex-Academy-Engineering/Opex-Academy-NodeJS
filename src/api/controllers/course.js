@@ -254,7 +254,7 @@ const getPopularCourses = async (req, res) => {
  *  -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR -- -- METHOD SEPERATOR --
  */
 
-const getAllFreeCourses = async (req, res) => {
+getAllFreeCourses = async (req, res) => {
   try {
     
     const courses = await Course.find({ price: "free" }).populate(

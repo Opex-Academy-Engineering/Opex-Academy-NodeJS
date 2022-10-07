@@ -75,14 +75,15 @@ const registerNewUser = async (req, res) => {
             });
           } else if (isEmailAvailable.login_type == "GOOGLE") {
             var courses = []
-            await isEmailAvailable.populate(['kyc','courses']);
+     
             const webToken = await isEmailAvailable.generateWebToken();
             const allUserCourses = await OwnedCourse.find({owner:isEmailAvailable._id})
             for(var x in allUserCourses){
-              courses.push(allUserCourses[x].courses);
+              courses.push(allUserCourses[x].course);
             } 
             isEmailAvailable.courses = courses;
             await isEmailAvailable.save()
+            await isEmailAvailable.populate(['kyc','courses']);
 
             return res.status(202).json({
               message:

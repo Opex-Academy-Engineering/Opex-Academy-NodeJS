@@ -42,10 +42,9 @@ const courseSchema = new mongoose.Schema(
       ref: "Facilitator",
     },
     tags: 
-      {
-        first_tag: String,
-        second_tag: String,
-      },
+      [{
+        type:String
+      }],
     
     content: [],
   },

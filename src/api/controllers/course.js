@@ -32,10 +32,11 @@ const { constants } = require("buffer");
 const createCourse = async (req, res) => {
   try {
 
+    print('Found');
     const file = req.file;
 
     const uid = uuidv4();
-   
+
 
     // const deleteData = fs.unlinkSync(filePath);
     const facilitator = await Facilitator.findOne({
@@ -55,21 +56,29 @@ const createCourse = async (req, res) => {
 
 
       if (!doesCourseExists) {
-        const course = new Course({
-          title: req.body.title,
-          description: req.body.description,
-          course_header_image: file.location,
-          facilitator: facilitator._id,
-          price: req.body.price ?? ""
-        });
-
-        await course.save()
-         facilitator.courses_facilitated.push(course);
-         await facilitator.save();
-        return res.status(201).json({
-          messaage: "Course created successfully",
-          data: course,
-        });
+        if(facilitator){
+          const course = new Course({
+            title: req.body.title,
+            description: req.body.description,
+            course_header_image: file.location,
+            facilitator: facilitator._id,
+            price: req.body.price ?? "",
+            tags:req.body.tags
+          });
+  
+          await course.save()
+           facilitator.courses_facilitated.push(course);
+           await facilitator.save();
+          return res.status(201).json({
+            messaage: "Course created successfully",
+            data: course,
+          });
+        }else {
+          return res.status(400).json({
+            messaage: `Facilitator not found`,
+            data: {},
+          });
+        }
       } else {
         return res.status(400).json({
           messaage: `Course with title: ${req.body.title}, already exists`,
@@ -85,7 +94,7 @@ const createCourse = async (req, res) => {
   } catch (ex) {
     return res
       .status(500)
-      .json({ message: "Failed to create course,ma", data: ex.messaage });
+      .json({ message: "Failed to create course.", data: ex.messaage });
   }
 };
 /*
